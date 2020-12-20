@@ -5,11 +5,39 @@ public class CostItem {
     private String description;
     private double sum;
     private Currency currency;
-    private String id;
+    private int id;
     private Date date;
     private String category;
 
 
+    @Override
+    public String toString() {
+        return "CostItem{" +
+                "id='" + id + '\'' +
+                ", date=" + date +
+                ", category='" + category + '\'' +
+                ", description='" + description + '\'' +
+                ", sum=" + sum +
+                ", currency=" + currency +
+                '}';
+    }
+
+
+//    public CostItem(Date date, String category, String description, double sum, Currency currency) {
+        setDate(date);
+        setCategory(category);
+        setDescription(description);
+        setSum(sum);
+        setCurrency(currency);
+        //assigning id with a unique value
+        //..
+    }
+
+
+
+    public void setId(int id){
+        this.id= id;
+    }
     public Date getDate() {
         return date;
     }
@@ -26,23 +54,8 @@ public class CostItem {
         this.category = category;
     }
 
-    public CostItem(String id, Date date, String category, String description, double sum, Currency currency) {
-
-        setId(id);
-
-        setDescription(description);
-        setCurrency(currency);
-        setSum(sum);
-        //assigning id with a unique value
-        //..
-    }
-
-    public String getId() {
+    public int getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getDescription() {
@@ -62,7 +75,7 @@ public class CostItem {
     }
 
     public String getCurrency() {
-        return currency;
+        return String.valueOf(currency);
     }
 
     public void setCurrency(Currency currency) {
