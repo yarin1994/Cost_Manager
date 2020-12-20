@@ -11,6 +11,10 @@ import java.sql.*;
 public class DerbyDBModel implements IModel {
     public static String driver = "org.apache.derby.jdbc.ClientDriver";
     public static String protocol = "jdbc:derby://localhost:1527/gagamoDB;create=true";
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet rs = null;
+
 
     public void DerbyDBModel() throws CostManagerException {
         startDerbyDB();
@@ -18,23 +22,22 @@ public class DerbyDBModel implements IModel {
 
     public void startDerbyDB() throws CostManagerException {
         try {
-
-        } catch (SQLException e) {
+            Class.forName(driver);
+            //getting connection by calling get connection
+            connection = DriverManager.getConnection(protocol);
+            System.out.println("Connected to DB");
+            statement = connection.createStatement();
+        } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e);
         }
     }
 
     @Override
     public void addCostItem(CostItem item) throws CostManagerException {
-        Connection connection = null;
-        Statement statement = null;
-        ResultSet rs = null;
+
 
         try{
-            Class.forName(driver);
-            //getting connection by calling get connection
-            connection = DriverManager.getConnection(protocol);
-            statement = connection.createStatement();
+
             String query;
 //          query = "CREATE TABLE CostItem (id varchar (10) , date Date, category String, description varchar (256) , summary double, currency varchar (6))";
 //            statement.execute(query);
@@ -55,7 +58,7 @@ public class DerbyDBModel implements IModel {
 
             }
 
-        } catch(SQLException | ClassNotFoundException e) {
+        } catch(SQLException e) {
             throw new CostManagerException("problem with adding cost item",e);
 //            throw new CostManagerException("oh shit");
         }finally {
