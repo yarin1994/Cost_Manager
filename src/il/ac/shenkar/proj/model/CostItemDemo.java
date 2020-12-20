@@ -18,7 +18,7 @@ public class CostItemDemo {
 //            a.addCostItem(item);
 //            a.addCategory(cat);
 //            a.deleteCostItem(2);
-            a.getReport(Date.valueOf("2020-12-11"), Date.valueOf("2020-12-13"));
+//            a.getReport(Date.valueOf("2020-12-11"), Date.valueOf("2020-12-13"));
             a.printCostItem();
 //            a.deleteCategory("Gas");
 //            a.printCategories();

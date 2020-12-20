@@ -23,7 +23,7 @@ public class CostItem {
     }
 
 
-//    public CostItem(Date date, String category, String description, double sum, Currency currency) {
+    public CostItem(Date date, String category, String description, double sum, Currency currency) {
         setDate(date);
         setCategory(category);
         setDescription(description);
