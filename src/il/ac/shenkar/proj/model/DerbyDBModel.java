@@ -12,8 +12,8 @@ import java.util.ArrayList;
 //import java.sql.Statement;
 
 public class DerbyDBModel implements IModel {
-    public static String driver = "org.apache.derby.jdbc.ClientDriver";
-    public static String protocol = "jdbc:derby://localhost:1527/gagamoDB;create=true";
+    public static String driver = "org.apache.derby.jdbc.EmbeddedDriver";
+    public static String connectionString = "jdbc:derby:";
     public Connection connection = null;
     public Statement statement = null;
     public ResultSet rs = null;
@@ -22,23 +22,24 @@ public class DerbyDBModel implements IModel {
     public PreparedStatement categoryState;
 
     public DerbyDBModel() throws CostManagerException {
-        startDerbyDB();
+        createConnections();
     }
 //    public void DerbyDBModel() throws CostManagerException {
 //        startDerbyDB();
 //    }
 
 
-    public void startDerbyDB() throws CostManagerException {
+    public void createConnections() throws CostManagerException {
         try {
             Class.forName(driver);
             //getting connection by calling get connection
-            this.connection = DriverManager.getConnection(protocol);
+            connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
+//            this.connection = DriverManager.getConnection(protocol);
             System.out.println("Connected to DB");
             this.statement = this.connection.createStatement();
-//            query = "CREATE TABLE CostItem (id int GENERATED ALWAYS AS IDENTITY(starts with 1, increment by 1) not null , date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
+            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null , date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
 //            query = "create table categories(name varchar(15))";
-//            statement.execute(query);
+            statement.execute(query);
 //            statement.execute("DROP TABLE CostItem");
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e);

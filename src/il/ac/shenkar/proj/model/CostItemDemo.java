@@ -12,10 +12,10 @@ public class CostItemDemo {
             e.printStackTrace();
         }
         CostItem item = new CostItem(Date.valueOf("2020-12-15"), "Food", "Nazis", 10.5,  Currency.ILS);
-        Category cat = new Category("Gas");
+//        Category cat = new Category("Gas");.
         try {
 //            System.out.println(item);
-//            a.addCostItem(item);
+            a.addCostItem(item);
 //            a.addCategory(cat);
 //            a.deleteCostItem(2);
 //            a.getReport(Date.valueOf("2020-12-11"), Date.valueOf("2020-12-13"));
