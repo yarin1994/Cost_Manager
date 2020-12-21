@@ -11,11 +11,13 @@ public class CostItemDemo {
         } catch (CostManagerException e) {
             e.printStackTrace();
         }
-        CostItem item = new CostItem(Date.valueOf("2020-12-15"), "Food", "Nazis", 10.5,  Currency.ILS);
+        CostItem item = new CostItem(Date.valueOf("2020-12-17"), "Bills", "gas", 60,  Currency.ILS);
 //        Category cat = new Category("Gas");.
         try {
 //            System.out.println(item);
-            a.addCostItem(item);
+//            a.addCostItem(item);
+            a.pieChart(Date.valueOf("2020-12-15"), Date.valueOf("2020-12-26"));
+            a.printPiechart();
 //            a.addCategory(cat);
 //            a.deleteCostItem(2);
 //            a.getReport(Date.valueOf("2020-12-11"), Date.valueOf("2020-12-13"));

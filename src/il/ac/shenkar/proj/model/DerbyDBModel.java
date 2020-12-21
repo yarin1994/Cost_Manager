@@ -20,6 +20,8 @@ public class DerbyDBModel implements IModel {
     public String query = "";
     public PreparedStatement state;
     public PreparedStatement categoryState;
+    ArrayList<pieChart> result = new ArrayList<pieChart>();
+
 
     public DerbyDBModel() throws CostManagerException {
         createConnections();
@@ -35,11 +37,11 @@ public class DerbyDBModel implements IModel {
             //getting connection by calling get connection
             connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
 //            this.connection = DriverManager.getConnection(protocol);
-            System.out.println("Connected to DB");
+            System.out.println("Connected to DB\n");
             this.statement = this.connection.createStatement();
-            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null , date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
+//            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null , date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
 //            query = "create table categories(name varchar(15))";
-            statement.execute(query);
+//            statement.execute(query);
 //            statement.execute("DROP TABLE CostItem");
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e);
@@ -79,6 +81,7 @@ public class DerbyDBModel implements IModel {
                 System.out.println("description: " + rs.getString(4));
                 System.out.println("sum : " + rs.getDouble(5));
                 System.out.println("currency : " + rs.getString(6));
+                System.out.println('\n');
 
 //
 
@@ -105,6 +108,40 @@ public class DerbyDBModel implements IModel {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
+
+    public void pieChart(Date start, Date end) throws CostManagerException{
+        try {
+
+            rs = statement.executeQuery("SELECT category, SUM(summary) as total FROM CostItem WHERE date BETWEEN DATE ('" + start.toLocalDate() + "') AND DATE('" + end.toLocalDate() + "') group by category");
+            while(rs.next()){
+                String categoryName = rs.getString("category");
+                Double tot = rs.getDouble("total");
+
+                result.add(new pieChart(categoryName, tot));
+            }
+//            for(int i = 0; i < result.size(); i++){
+//                System.out.println(result.get(i));
+//            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        finally {
+            if(rs != null) try {
+                rs.close();
+            }catch (SQLException throwables){
+                throw new CostManagerException(throwables.getMessage());
+            }
+        }
+    }
+
+    public void printPiechart() throws  CostManagerException{
+
+        for(int i=0; i<result.size(); i++){
+            System.out.println("category: " + result.get(i).getCategoryName() + " total: " + result.get(i).getTotal());
+        }
+        System.out.println('\n');
+
     }
 
     public void deleteCostItem(int id) throws CostManagerException {
