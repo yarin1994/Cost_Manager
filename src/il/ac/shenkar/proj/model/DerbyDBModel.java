@@ -5,11 +5,7 @@ import  il.ac.shenkar.proj.model.CostManagerException;
 
 import java.sql.*;
 import java.util.ArrayList;
-//import java.sql.Connection;
-//import java.sql.DriverManager;
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.sql.Statement;
+
 
 public class DerbyDBModel implements IModel {
     public static String driver = "org.apache.derby.jdbc.EmbeddedDriver";
@@ -26,9 +22,7 @@ public class DerbyDBModel implements IModel {
     public DerbyDBModel() throws CostManagerException {
         createConnections();
     }
-//    public void DerbyDBModel() throws CostManagerException {
-//        startDerbyDB();
-//    }
+
 
 
     public void createConnections() throws CostManagerException {
@@ -83,7 +77,7 @@ public class DerbyDBModel implements IModel {
                 System.out.println("currency : " + rs.getString(6));
                 System.out.println('\n');
 
-//
+
 
             }
 
@@ -120,9 +114,7 @@ public class DerbyDBModel implements IModel {
 
                 result.add(new pieChart(categoryName, tot));
             }
-//            for(int i = 0; i < result.size(); i++){
-//                System.out.println(result.get(i));
-//            }
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -164,7 +156,6 @@ public class DerbyDBModel implements IModel {
             state.setString(1, category.getCategory());
             state.execute();
 
-            //statement.execute(query);
 
 
         } catch (SQLException e) {
@@ -213,6 +204,5 @@ public class DerbyDBModel implements IModel {
         }
     }
 
-    //    @Override
 
 }

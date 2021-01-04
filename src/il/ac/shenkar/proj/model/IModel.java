@@ -7,7 +7,6 @@ public interface IModel {
      public void createConnections() throws CostManagerException;
      public void killDB() throws CostManagerException;
 
-
 //   COSTITEM FUNCTIONS:
      public void addCostItem(CostItem item) throws CostManagerException;
      public void printCostItem() throws  CostManagerException;
