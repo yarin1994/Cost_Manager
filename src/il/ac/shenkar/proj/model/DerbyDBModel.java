@@ -23,6 +23,10 @@ public class DerbyDBModel implements IModel {
         createConnections();
     }
 
+    public CostItem[] getCostItems() throws CostManagerException {
+        return new CostItem[0];
+    }
+
 
 
     public void createConnections() throws CostManagerException {

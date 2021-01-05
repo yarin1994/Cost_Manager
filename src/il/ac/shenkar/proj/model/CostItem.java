@@ -23,6 +23,14 @@ public class CostItem {
                 '}';
     }
 
+    public CostItem(String category, String description, double sum, Currency currency) {
+        setCategory(category);
+        setDescription(description);
+        setSum(sum);
+        setCurrency(currency);
+        //assigning id with a unique value
+        //..
+    }
 
     public CostItem(Date date, String category, String description, double sum, Currency currency) {
         setDate(date);
