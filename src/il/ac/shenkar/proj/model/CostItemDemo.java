@@ -16,8 +16,10 @@ public class CostItemDemo {
         try {
 //            System.out.println(item);
 //            a.addCostItem(item);
-            a.pieChart(Date.valueOf("2020-12-15"), Date.valueOf("2020-12-26"));
-            a.printPiechart();
+            //System.out.println(a.getCostItems().length);
+
+//            a.pieChart(Date.valueOf("2020-12-15"), Date.valueOf("2020-12-26"));
+//            a.printPiechart();
 //            a.addCategory(cat);
 //            a.deleteCostItem(2);
 //            a.getReport(Date.valueOf("2020-12-11"), Date.valueOf("2020-12-13"));

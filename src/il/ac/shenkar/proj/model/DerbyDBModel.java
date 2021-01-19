@@ -2,9 +2,10 @@ package il.ac.shenkar.proj.model;
 
 import  il.ac.shenkar.proj.model.CostManagerException;
 
-
+import il.ac.shenkar.proj.model.Currency;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class DerbyDBModel implements IModel {
@@ -23,8 +24,47 @@ public class DerbyDBModel implements IModel {
         createConnections();
     }
 
-    public CostItem[] getCostItems() throws CostManagerException {
-        return new CostItem[0];
+    public List<CostItem> getCostItems() throws CostManagerException {
+        List<CostItem> costItems = new ArrayList<CostItem>();
+
+        try {
+            rs = statement.executeQuery("SELECT * FROM CostItem");
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                Date date = rs.getDate("date");
+                Double sum = rs.getDouble("summary");
+                String currencyStr = rs.getString("currency");
+                String category = rs.getString("category");
+                String description = rs.getString("description");
+                Currency currency;
+                switch (currencyStr) {
+                    case "EURO":
+                        currency = Currency.EURO;
+                        break;
+                    case "ILS":
+                        currency = Currency.ILS;
+                        break;
+                    case "GBP":
+                        currency = Currency.GBP;
+                        break;
+                    default:
+                        currency = Currency.USD;
+
+                }
+                //Build the List<CostItems>
+                costItems.add(new CostItem(id,date,category,description, sum,currency));
+            }
+        } catch (SQLException e) {
+            throw new CostManagerException(e.getMessage());
+        } finally {
+            if (rs != null) try {
+                rs.close();
+            } catch (SQLException e) {
+                throw new CostManagerException(e.getMessage());
+            }
+        }
+
+        return costItems;
     }
 
 
@@ -33,13 +73,15 @@ public class DerbyDBModel implements IModel {
         try {
             Class.forName(driver);
             //getting connection by calling get connection
-            connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
+            System.out.println("Hello!");
+            this.connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
+
 //            this.connection = DriverManager.getConnection(protocol);
             System.out.println("Connected to DB\n");
             this.statement = this.connection.createStatement();
-//            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null , date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
+//            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null ,  date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
 //            query = "create table categories(name varchar(15))";
-//            statement.execute(query);
+//           statement.execute(query);
 //            statement.execute("DROP TABLE CostItem");
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e);
@@ -52,7 +94,7 @@ public class DerbyDBModel implements IModel {
 
         try {
 
-            state = connection.prepareStatement("insert into CostItem(date,category,description,summary,currency) values (?,?,?,?,?)");
+            state = this.connection.prepareStatement("insert into CostItem(date,category,description,summary,currency) values (?,?,?,?,?)");
 
             state.setDate(1, item.getDate());
             state.setString(2, item.getCategory());
@@ -92,13 +134,12 @@ public class DerbyDBModel implements IModel {
 
     }
 
-    public void getReport(Date start, Date end) throws CostManagerException{
+    public List<CostItem> getReport(Date start, Date end) throws CostManagerException{
+        List<CostItem> result = new ArrayList<CostItem>();
         try {
-
-            ArrayList<CostItem> result = new ArrayList<CostItem>();
             rs = statement.executeQuery("SELECT * FROM CostItem WHERE date BETWEEN DATE ('" + start.toLocalDate() + "') AND DATE('" + end.toLocalDate() + "')");
             while(rs.next()){
-                result.add(new CostItem((rs.getDate(2)), rs.getString(3), rs.getString(4), rs.getDouble(5), Currency.valueOf(rs.getString(6))));
+                result.add(new CostItem((rs.getInt(1)),(rs.getDate(2)), rs.getString(3), rs.getString(4), rs.getDouble(5), Currency.valueOf(rs.getString(6))));
             }
             for(int i = 0; i < result.size(); i++){
                 System.out.println(result.get(i));
@@ -106,6 +147,7 @@ public class DerbyDBModel implements IModel {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        return result;
     }
 
     public void pieChart(Date start, Date end) throws CostManagerException{
@@ -154,18 +196,13 @@ public class DerbyDBModel implements IModel {
 
     public void addCategory(Category category) throws CostManagerException {
         try {
-
             state = connection.prepareStatement("insert into categories(name) values (?)");
-
             state.setString(1, category.getCategory());
             state.execute();
-
-
 
         } catch (SQLException e) {
             throw new CostManagerException("problem with adding cost item ", e);
         }
-
     }
 
     public void printCategories() throws  CostManagerException{
@@ -178,8 +215,6 @@ public class DerbyDBModel implements IModel {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
-
     }
 
     public void deleteCategory(String category) throws CostManagerException{
@@ -207,6 +242,4 @@ public class DerbyDBModel implements IModel {
         } catch (Exception e) {
         }
     }
-
-
 }

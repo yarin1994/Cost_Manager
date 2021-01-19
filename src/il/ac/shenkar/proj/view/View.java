@@ -12,7 +12,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * The View class is implementing the IView interface.
@@ -42,9 +46,16 @@ public class View implements IView {
     }
 
     @Override
-    public void showItems(CostItem[] vec) {
+    public void showItems(List<CostItem> vec) {
         ui.showItems(vec);
     }
+
+    @Override
+    public void showReport(List<CostItem> vec) {
+        ui.showReport( vec);
+    }
+
+
     /**
      *
      * Constructor to build the ui and than use start method to run the thread.
@@ -100,6 +111,7 @@ public class View implements IView {
         private JLabel lbItemDescription;
         private JLabel lbMessage;
         private JLabel lbId;
+        private JLabel lbItemDate;
         private JList<String> list;
         private JScrollPane categoryScroll;
 
@@ -108,10 +120,14 @@ public class View implements IView {
         private JPanel textPanel;
         private JLabel from;
         private JLabel until;
+        private JTextField tfItemDate;
         private JTextField fromtxt;
         private JTextField untiltxt;
         private JTextArea reporttxt;
         private JButton reportBtn;
+
+
+
 
         // private JFrame delFrame;
         // private JPanel delPanel;
@@ -145,6 +161,8 @@ public class View implements IView {
             lbItemCategory = new JLabel("Item Category:");
             lbItemSum = new JLabel("Item Sum:");
             lbId = new JLabel("ID:");
+            lbItemDate = new JLabel("Date:");
+            tfItemDate = new JTextField(10);
             lbAddCat = new JLabel("Category");
             //creating the messages ui components
             lbMessage = new JLabel("Message: ");
@@ -191,6 +209,8 @@ public class View implements IView {
             //adding the components to the top panel
             panelTop.add(lbItemSum);
             panelTop.add(tfItemSum);
+            panelTop.add(lbItemDate);
+            panelTop.add(tfItemDate);
             panelTop.add(lbItemCategory);
             panelTop.add(categoryScroll);
             //panelTop.add(list);
@@ -253,6 +273,7 @@ public class View implements IView {
 
 
 
+
             //--------------- Start GET REPORT WINDOW --------------------------------------
             // adding the componentes to the pieChart panel
 
@@ -275,7 +296,7 @@ public class View implements IView {
 
 
             //displaying the window
-            reportFrame.setSize(1200, 600);
+            reportFrame.setSize(1400, 600);
             reportFrame.setVisible(false);
             // ---------------------- End of GET REPORT -------------------------------
 
@@ -351,11 +372,22 @@ public class View implements IView {
                         }
 
                         // Get the category
-                        String category = tfItemCategory.getText();
+                        String category = list.getSelectedValue();
                         // NOTE TO SELF - Needs to add checks to the category input
-
+                        String costDate ="";
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMM-dd");
+                        try {
+                            costDate = tfItemDate.getText();
+                            try {
+                                dateFormat.parse(costDate.trim());
+                            } catch (ParseException pe) {
+                                View.this.showMessage("Date is not valid");
+                                throw new CostManagerException("date is not valid");
+                            }} catch (NumberFormatException | CostManagerException ex) {
+                            View.this.showMessage("Insert another date, " + ex.getMessage());
+                        }
                         // Creates Cost item object and move it to the view-model object
-                        CostItem item = new CostItem(category,description, sum, currency);
+                        CostItem item = new CostItem(Date.valueOf(costDate),category,description, sum, currency);
                         vm.addCostItem(item);
 
 
@@ -367,8 +399,50 @@ public class View implements IView {
                 }
             });
 
+            // Delete button event listener
+            btDeleteCost.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        double idToDelete = Double.parseDouble(tfDelete.getText());
+                        vm.deleteCostItem((int)idToDelete);
+                    }catch (NumberFormatException ex) {
+                        View.this.showMessage("problem with entered id... "+ex.getMessage());
+                }
+            }});
+
+            // Get report button listenner
+            reportBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String startDate ="";
+                    String endDate = "";
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMM-dd");
+                    try {
+                        startDate = fromtxt.getText();
+                        try {
+                            dateFormat.parse(startDate.trim());
+                        } catch (ParseException pe) {
+                            View.this.showMessage("Date is not valid");
+                            throw new CostManagerException("date is not valid");
+                        }} catch (NumberFormatException | CostManagerException ex) {
+                        View.this.showMessage("Insert another date, " + ex.getMessage());
+                    }
+                    try {
+                        endDate = untiltxt.getText();
+                        try {
+                            dateFormat.parse(endDate.trim());
+                        } catch (ParseException pe) {
+                            View.this.showMessage("Date is not valid");
+                            throw new CostManagerException("date is not valid");
+                        }} catch (NumberFormatException | CostManagerException ex) {
+                        View.this.showMessage("Insert another date, " + ex.getMessage());
+                    }
+                    vm.getReport(Date.valueOf(startDate),Date.valueOf(endDate));
+                }
+            });
             //displaying the window
-            frame.setSize(1200, 600);
+            frame.setSize(1400, 600);
             frame.setVisible(true);
         }
 
@@ -390,9 +464,29 @@ public class View implements IView {
             //
             //}
         }
+        public void showReport(List<CostItem> vec){
+            StringBuilder sb = new StringBuilder();
+            for(CostItem item : vec) {
+                sb.append(item.toString());
+                sb.append("\n");
+            }
+            String text = sb.toString();
+
+            if (SwingUtilities.isEventDispatchThread()) {
+                textArea.setText(text);
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        reporttxt.setText(text);
+                    }
+                });
+
+            }
+        }
 
         // Shows all costs to the user from DB
-        public void showItems(CostItem[] items) {
+        public void showItems(List<CostItem> items) {
             StringBuilder sb = new StringBuilder();
             for(CostItem item : items) {
                 sb.append(item.toString());

@@ -41,6 +41,16 @@ public class CostItem {
         //assigning id with a unique value
         //..
     }
+    public CostItem(int id, Date date, String category, String description, double sum, Currency currency) {
+        setId(id);
+        setDate(date);
+        setCategory(category);
+        setDescription(description);
+        setSum(sum);
+        setCurrency(currency);
+        //assigning id with a unique value
+        //..
+    }
 
 
 
