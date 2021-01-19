@@ -176,12 +176,6 @@ public class View implements IView {
             l1.addElement("C++");
             l1.addElement("Java");
             l1.addElement("PHP");
-            l1.addElement("PHP");
-            l1.addElement("PHP");
-            l1.addElement("PHP");
-            l1.addElement("PHP");
-            l1.addElement("PHP");
-            l1.addElement("PHP");
             list = new JList(l1);
             list.setBounds(100,50, 75,40);
             categoryScroll = new JScrollPane(list);
@@ -250,9 +244,7 @@ public class View implements IView {
 
             //setting a different color for the panel message
             panelMessage.setBackground(Color.YELLOW);
-            // panelLeftMessage.setBackground(Color.MAGENTA);
-            // panelRightMessage.setBackground(Color.RED);
-            // panelMiddleMessage.setBackground(Color.BLUE);
+
 
 
             //setting the window layout manager
@@ -275,7 +267,7 @@ public class View implements IView {
 
 
             //--------------- Start GET REPORT WINDOW --------------------------------------
-            // adding the componentes to the pieChart panel
+            // adding the components to the pieChart panel
 
             //setting the topPanel
             topPanel.add(from);
