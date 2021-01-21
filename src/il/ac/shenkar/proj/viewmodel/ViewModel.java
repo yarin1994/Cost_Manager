@@ -1,5 +1,6 @@
 package il.ac.shenkar.proj.viewmodel;
 
+import il.ac.shenkar.proj.model.Category;
 import il.ac.shenkar.proj.model.CostItem;
 import il.ac.shenkar.proj.model.CostManagerException;
 import il.ac.shenkar.proj.model.IModel;
@@ -64,6 +65,8 @@ public class ViewModel implements IViewModel {
             }
         });
     }
+
+    @Override
     public void getReport(Date start, Date end){
         pool.submit(new Runnable() {
             @Override
@@ -78,6 +81,57 @@ public class ViewModel implements IViewModel {
             }
         });
     }
+
+    @Override
+    public void addCategory(Category category) {
+        pool.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    model.addCategory(category);
+                    List<Category> categories = model.printCategories();
+                    view.showMessage("Category added successfully");
+                    view.printCategories(categories);
+//                    view.addCategory(categories);
+                } catch (CostManagerException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public void getPie(Date start , Date end){
+        pool.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    model.pieChart(convertUtilToSql(start), convertUtilToSql(end));
+
+                } catch (CostManagerException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+    @Override
+    public List<Category> printCategories(){
+        List<Category> categories = null;
+        try {
+            categories = model.printCategories();
+        } catch (CostManagerException e) {
+            e.printStackTrace();
+        }
+        finally {
+//            view.printCategories(categories);
+            return categories;
+        }
+
+    }
+
+
     private static java.sql.Date convertUtilToSql(java.util.Date uDate) {
         java.sql.Date sDate = new java.sql.Date(uDate.getTime());
         return sDate;

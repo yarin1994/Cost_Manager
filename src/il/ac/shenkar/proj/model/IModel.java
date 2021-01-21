@@ -1,7 +1,6 @@
 package il.ac.shenkar.proj.model;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 
 public interface IModel {
@@ -18,7 +17,11 @@ public interface IModel {
 
 //   CATEGORY FUNCTIONS:
      public void addCategory(Category category) throws CostManagerException;
-     public void printCategories() throws  CostManagerException;
+     public List<Category> printCategories() throws  CostManagerException;
      public void deleteCategory(String category) throws CostManagerException;
-     
+     public void pieChart(Date start, Date end) throws CostManagerException;
+
+
+
+
 }

@@ -1,10 +1,12 @@
 package il.ac.shenkar.proj.viewmodel;
 
+import il.ac.shenkar.proj.model.Category;
 import il.ac.shenkar.proj.model.CostItem;
 import il.ac.shenkar.proj.model.IModel;
 import il.ac.shenkar.proj.view.IView;
 
 import java.util.Date;
+import java.util.List;
 
 public interface IViewModel {
 
@@ -13,4 +15,8 @@ public interface IViewModel {
     public void addCostItem(CostItem item);
     public void deleteCostItem(int idNumber);
     public void getReport(Date start, Date end);
+    public void addCategory(Category category);
+    public List<Category> printCategories();
+
+    public void getPie(Date start, Date end);
 }

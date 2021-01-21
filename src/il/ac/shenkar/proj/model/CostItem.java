@@ -24,7 +24,7 @@ public class CostItem {
     }
 
     public CostItem(String category, String description, double sum, Currency currency) {
-        setCategory(category);
+        setCategories(category);
         setDescription(description);
         setSum(sum);
         setCurrency(currency);
@@ -34,7 +34,7 @@ public class CostItem {
 
     public CostItem(Date date, String category, String description, double sum, Currency currency) {
         setDate(date);
-        setCategory(category);
+        setCategories(category);
         setDescription(description);
         setSum(sum);
         setCurrency(currency);
@@ -44,7 +44,7 @@ public class CostItem {
     public CostItem(int id, Date date, String category, String description, double sum, Currency currency) {
         setId(id);
         setDate(date);
-        setCategory(category);
+        setCategories(category);
         setDescription(description);
         setSum(sum);
         setCurrency(currency);
@@ -65,11 +65,11 @@ public class CostItem {
         this.date = date;
     }
 
-    public String getCategory() {
+    public String getCategories() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategories(String category) {
         this.category = category;
     }
 

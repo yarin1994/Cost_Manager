@@ -45,7 +45,7 @@ public class CostItemTest {
     @Test
     public void getCategory() {
         String expected = "Food";
-        String real = test.getCategory();
+        String real = test.getCategories();
         assertEquals(expected,real);
     }
 

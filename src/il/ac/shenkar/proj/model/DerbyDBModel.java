@@ -1,11 +1,13 @@
 package il.ac.shenkar.proj.model;
 
-import  il.ac.shenkar.proj.model.CostManagerException;
-
-import il.ac.shenkar.proj.model.Currency;
+import javax.xml.namespace.QName;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
 
 
 public class DerbyDBModel implements IModel {
@@ -80,9 +82,11 @@ public class DerbyDBModel implements IModel {
             System.out.println("Connected to DB\n");
             this.statement = this.connection.createStatement();
 //            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null ,  date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
-//            query = "create table categories(name varchar(15))";
-//           statement.execute(query);
-//            statement.execute("DROP TABLE CostItem");
+//            query = "create table categories(name varchar(25) primary key )";
+//            query = "insert into categories values 'Food'";
+//            statement.execute("DROP TABLE Categories");
+//                        statement.execute(query);
+
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e);
         }
@@ -97,7 +101,7 @@ public class DerbyDBModel implements IModel {
             state = this.connection.prepareStatement("insert into CostItem(date,category,description,summary,currency) values (?,?,?,?,?)");
 
             state.setDate(1, item.getDate());
-            state.setString(2, item.getCategory());
+            state.setString(2, item.getCategories());
             state.setString(3, item.getDescription());
             state.setDouble(4, item.getSum());
             state.setString(5, item.getCurrency());
@@ -154,12 +158,21 @@ public class DerbyDBModel implements IModel {
         try {
 
             rs = statement.executeQuery("SELECT category, SUM(summary) as total FROM CostItem WHERE date BETWEEN DATE ('" + start.toLocalDate() + "') AND DATE('" + end.toLocalDate() + "') group by category");
-            while(rs.next()){
-                String categoryName = rs.getString("category");
-                Double tot = rs.getDouble("total");
-
-                result.add(new pieChart(categoryName, tot));
+//            while(rs.next()){
+//                String categoryName = rs.getString("category");
+//                Double tot = rs.getDouble("total");
+//
+//                result.add(new pieChart(categoryName, tot));
+//            }
+            DefaultPieDataset dataset = new DefaultPieDataset();
+            while (rs.next()) {
+                dataset.setValue(rs.getString("name"), Double.parseDouble(rs.getString("amount")));
             }
+            JFreeChart chart = ChartFactory.createPieChart("Category - amounts", dataset, true, true, false);
+            int width = 560;
+            int height = 370;
+//            File pieChart = new File("Pie_Chart.jpeg");
+//            ChartUtilities.saveChartAsJPEG(pieChart, chart, width, height);
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -205,16 +218,34 @@ public class DerbyDBModel implements IModel {
         }
     }
 
-    public void printCategories() throws  CostManagerException{
-        try {
-            rs = statement.executeQuery("SELECT  * FROM categories");
+    public List<Category> printCategories() throws  CostManagerException{
+        List<Category> categories = new ArrayList<Category>();
 
+
+        try {
+            rs = statement.executeQuery("SELECT * FROM categories");
             while (rs.next()){
-                System.out.println(rs.getString(1));
+//                System.out.println(rs.getString(1));
+
+                String name = rs.getString("name");
+//                System.out.println(name);
+
+
+
+                categories.add(new Category(name));
+
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+        } finally {
+            if (rs != null) try {
+                rs.close();
+            } catch (SQLException e) {
+                throw new CostManagerException(e.getMessage());
+            }
         }
+
+        return categories;
     }
 
     public void deleteCategory(String category) throws CostManagerException{
@@ -227,6 +258,17 @@ public class DerbyDBModel implements IModel {
             throw new CostManagerException("Problem deleting category", e);
         }
     }
+
+//    public void getPieChart(Date start, Date end) throws CostManagerException{
+//        try {
+//            state = connection.prepareStatement("Select * from CostItem WHEN ");
+//            state.setString(1, category.getCategory());
+//            state.execute();
+//
+//        } catch (SQLException e) {
+//            throw new CostManagerException("problem with adding cost item ", e);
+//        }
+//    }
 
     public void killDB() throws CostManagerException {
         if (statement != null) try {

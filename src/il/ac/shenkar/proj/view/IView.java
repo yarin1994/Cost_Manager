@@ -1,6 +1,8 @@
 package il.ac.shenkar.proj.view;
 
+import il.ac.shenkar.proj.model.Category;
 import il.ac.shenkar.proj.model.CostItem;
+import il.ac.shenkar.proj.model.CostManagerException;
 import il.ac.shenkar.proj.viewmodel.IViewModel;
 
 import java.util.ArrayList;
@@ -13,5 +15,12 @@ public interface IView {
     public void showMessage(String text);
     public void showItems(List<CostItem> vec);
     public void showReport(List<CostItem> vec);
+//    public void printCategories();
+
+    public void printCategories(List<Category> categories);
+    public void addCategory(List<Category> category);
+
+
+
     //..
 }

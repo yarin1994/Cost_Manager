@@ -17,6 +17,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+
 /**
  *
  * The View class is implementing the IView interface.
@@ -53,6 +55,21 @@ public class View implements IView {
     @Override
     public void showReport(List<CostItem> vec) {
         ui.showReport( vec);
+    }
+
+//    @Override
+//    public void printCategories() {
+//
+//    }
+
+    @Override
+    public void printCategories(List<Category> vec) {
+        ui.printCategories(vec);
+    }
+
+    @Override
+    public void addCategory(List<Category> category) {
+         ui.addCategory(category);
     }
 
 
@@ -101,7 +118,9 @@ public class View implements IView {
         private JButton btAddCostItem;
         private JButton btGetReport;
         private JButton btDeleteCost;
-        private JButton btbCategory;
+        private JButton btCategory;
+        private JButton btBack;
+        private JButton btPie;
         private JScrollPane scrollPane;
         private JTextArea textArea;
         private JLabel lbItemSum;
@@ -112,7 +131,7 @@ public class View implements IView {
         private JLabel lbMessage;
         private JLabel lbId;
         private JLabel lbItemDate;
-        private JList<String> list;
+//        private JList<String> list;
         private JScrollPane categoryScroll;
 
         private JFrame reportFrame;
@@ -126,6 +145,9 @@ public class View implements IView {
         private JTextArea reporttxt;
         private JButton reportBtn;
 
+
+        private JComboBox categoryBox;
+        //            btbCategory = new JButton("Add Category");
 
 
 
@@ -154,6 +176,7 @@ public class View implements IView {
             btAddCostItem = new JButton("Add Cost Item");
             btGetReport = new JButton("Get Report");
             btDeleteCost = new JButton("Delete Cost");
+            btCategory = new JButton("Add Category");
             textArea = new JTextArea();
             scrollPane = new JScrollPane(textArea);
             lbItemCurrency = new JLabel("Item Currency:");
@@ -170,17 +193,13 @@ public class View implements IView {
             tfMessage.setEditable(false);
             tfAddcat = new JTextField(10);
             tfDelete = new JTextField(10);
-            DefaultListModel<String> l1 = new DefaultListModel<>();
-            // NOTE TO SELF - Will be added automatically from DB
-            l1.addElement("C");
-            l1.addElement("C++");
-            l1.addElement("Java");
-            l1.addElement("PHP");
-            list = new JList(l1);
-            list.setBounds(100,50, 75,40);
-            categoryScroll = new JScrollPane(list);
-            categoryScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            btbCategory = new JButton("Add Category");
+
+
+            List<Category> cats = new ArrayList<>();
+            cats = vm.printCategories();
+            DefaultComboBoxModel catList = new DefaultComboBoxModel(cats.toArray());
+            categoryBox = new JComboBox(catList);
+
 
 
 
@@ -193,8 +212,11 @@ public class View implements IView {
             fromtxt = new JTextField(10);
             untiltxt = new JTextField(10);
             reportBtn = new JButton("Get Report");
-            reporttxt = new JTextArea(30,95);
+            reporttxt = new JTextArea(30, 95);
+            btBack = new JButton("Back");
+            btPie = new JButton("PieChart");
             reporttxt.setEditable(false);
+
 
         }
 
@@ -206,7 +228,9 @@ public class View implements IView {
             panelTop.add(lbItemDate);
             panelTop.add(tfItemDate);
             panelTop.add(lbItemCategory);
-            panelTop.add(categoryScroll);
+//            panelTop.add(categoryScroll);
+//            panelTop.add(categoryPane);
+            panelTop.add(categoryBox);
             //panelTop.add(list);
             panelTop.add(lbItemDescription);
             panelTop.add(tfItemDescription);
@@ -233,7 +257,7 @@ public class View implements IView {
             panelMiddleMessage.add(btGetReport);
             panelMiddleMessage.add(lbMessage);
             panelMiddleMessage.add(tfMessage);
-            panelRightMessage.add(btbCategory);
+            panelRightMessage.add(btCategory);
             panelRightMessage.add(lbAddCat);
             panelRightMessage.add(tfAddcat);
 
@@ -244,7 +268,6 @@ public class View implements IView {
 
             //setting a different color for the panel message
             panelMessage.setBackground(Color.YELLOW);
-
 
 
             //setting the window layout manager
@@ -264,12 +287,12 @@ public class View implements IView {
             frame.add(panelMessage, BorderLayout.SOUTH);
 
 
-
-
             //--------------- Start GET REPORT WINDOW --------------------------------------
             // adding the components to the pieChart panel
 
             //setting the topPanel
+            topPanel.add(btPie);
+            topPanel.add(btBack);
             topPanel.add(from);
             topPanel.add(fromtxt);
             topPanel.add(until);
@@ -320,14 +343,74 @@ public class View implements IView {
                     frame.setVisible(true);
                 }
             });
-
-            // Switches between the main page to the get report page
+//
+//             Switches between the main page to the get report page
             btGetReport.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     frame.setVisible(false);
                     reportFrame.setVisible(true);
 
+                }
+            });
+
+            btBack.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    reportFrame.setVisible(false);
+                    frame.setVisible(true);
+                }
+            });
+
+            btPie.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String startDate = "";
+                    String endDate = "";
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMM-dd");
+                    try {
+                        startDate = fromtxt.getText();
+                        try {
+                            dateFormat.parse(startDate.trim());
+                        } catch (ParseException pe) {
+                            View.this.showMessage("Date is not valid");
+                            throw new CostManagerException("date is not valid");
+                        }
+                    } catch (NumberFormatException | CostManagerException ex) {
+                        View.this.showMessage("Insert another date, " + ex.getMessage());
+                    }
+                    try {
+                        endDate = untiltxt.getText();
+                        try {
+                            dateFormat.parse(endDate.trim());
+                        } catch (ParseException pe) {
+                            View.this.showMessage("Date is not valid");
+                            throw new CostManagerException("date is not valid");
+                        }
+                    } catch (NumberFormatException | CostManagerException ex) {
+                        View.this.showMessage("Insert another date, " + ex.getMessage());
+                    }
+                    vm.getPie(Date.valueOf(startDate), Date.valueOf(endDate));
+                }
+            });
+
+
+
+            btCategory.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        String name = tfAddcat.getText();
+//                    System.out.println(name);
+                        if(name == null || name.length() == 0){
+                            throw new CostManagerException("category cannot be empty");
+                        }
+                        Category cat = new Category(name);
+                        vm.addCategory(cat);
+
+                    } catch (CostManagerException costManagerException) {
+                            costManagerException.printStackTrace();
+                    }
                 }
             });
 
@@ -340,7 +423,7 @@ public class View implements IView {
 
                         // get the description
                         String description = tfItemDescription.getText();
-                        if(description==null || description.length()==0) {
+                        if (description == null || description.length() == 0) {
                             throw new CostManagerException("description cannot be empty");
                         }
 
@@ -364,9 +447,10 @@ public class View implements IView {
                         }
 
                         // Get the category
-                        String category = list.getSelectedValue();
+                        String category = String.valueOf(categoryBox.getSelectedItem());
+                        System.out.println(category);
                         // NOTE TO SELF - Needs to add checks to the category input
-                        String costDate ="";
+                        String costDate = "";
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMM-dd");
                         try {
                             costDate = tfItemDate.getText();
@@ -375,18 +459,19 @@ public class View implements IView {
                             } catch (ParseException pe) {
                                 View.this.showMessage("Date is not valid");
                                 throw new CostManagerException("date is not valid");
-                            }} catch (NumberFormatException | CostManagerException ex) {
+                            }
+                        } catch (NumberFormatException | CostManagerException ex) {
                             View.this.showMessage("Insert another date, " + ex.getMessage());
                         }
                         // Creates Cost item object and move it to the view-model object
-                        CostItem item = new CostItem(Date.valueOf(costDate),category,description, sum, currency);
+                        CostItem item = new CostItem(Date.valueOf(costDate), category, description, sum, currency);
                         vm.addCostItem(item);
 
 
                     } catch (NumberFormatException ex) {
-                        View.this.showMessage("problem with entered sum... "+ex.getMessage());
-                    } catch(CostManagerException ex){
-                        View.this.showMessage("problem with entered data... problem with description... "+ex.getMessage());
+                        View.this.showMessage("problem with entered sum... " + ex.getMessage());
+                    } catch (CostManagerException ex) {
+                        View.this.showMessage("problem with entered data... problem with description... " + ex.getMessage());
                     }
                 }
             });
@@ -397,17 +482,18 @@ public class View implements IView {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         double idToDelete = Double.parseDouble(tfDelete.getText());
-                        vm.deleteCostItem((int)idToDelete);
-                    }catch (NumberFormatException ex) {
-                        View.this.showMessage("problem with entered id... "+ex.getMessage());
+                        vm.deleteCostItem((int) idToDelete);
+                    } catch (NumberFormatException ex) {
+                        View.this.showMessage("problem with entered id... " + ex.getMessage());
+                    }
                 }
-            }});
+            });
 
             // Get report button listenner
             reportBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    String startDate ="";
+                    String startDate = "";
                     String endDate = "";
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMM-dd");
                     try {
@@ -417,7 +503,8 @@ public class View implements IView {
                         } catch (ParseException pe) {
                             View.this.showMessage("Date is not valid");
                             throw new CostManagerException("date is not valid");
-                        }} catch (NumberFormatException | CostManagerException ex) {
+                        }
+                    } catch (NumberFormatException | CostManagerException ex) {
                         View.this.showMessage("Insert another date, " + ex.getMessage());
                     }
                     try {
@@ -427,10 +514,11 @@ public class View implements IView {
                         } catch (ParseException pe) {
                             View.this.showMessage("Date is not valid");
                             throw new CostManagerException("date is not valid");
-                        }} catch (NumberFormatException | CostManagerException ex) {
+                        }
+                    } catch (NumberFormatException | CostManagerException ex) {
                         View.this.showMessage("Insert another date, " + ex.getMessage());
                     }
-                    vm.getReport(Date.valueOf(startDate),Date.valueOf(endDate));
+                    vm.getReport(Date.valueOf(startDate), Date.valueOf(endDate));
                 }
             });
             //displaying the window
@@ -456,9 +544,10 @@ public class View implements IView {
             //
             //}
         }
-        public void showReport(List<CostItem> vec){
+
+        public void showReport(List<CostItem> vec) {
             StringBuilder sb = new StringBuilder();
-            for(CostItem item : vec) {
+            for (CostItem item : vec) {
                 sb.append(item.toString());
                 sb.append("\n");
             }
@@ -480,7 +569,7 @@ public class View implements IView {
         // Shows all costs to the user from DB
         public void showItems(List<CostItem> items) {
             StringBuilder sb = new StringBuilder();
-            for(CostItem item : items) {
+            for (CostItem item : items) {
                 sb.append(item.toString());
                 sb.append("\n");
             }
@@ -497,6 +586,65 @@ public class View implements IView {
                 });
 
             }
+        }
+
+
+        public void printCategories(List<Category> vec) {
+//            System.out.println();
+//            categoryList = (JList<String>) vec.toString();
+//            StringBuilder sb = new StringBuilder();
+//            DefaultListModel<String> lm = new DefaultListModel<>();
+//            List<String> newList = new ArrayList<>();
+            DefaultComboBoxModel newList = new DefaultComboBoxModel();
+            for(Category cat : vec){
+//                newList.add(cat.toString());
+
+                newList.addElement(cat);
+//                System.out.println(l);
+//                sb.append(l);
+//                sb.append("\n");
+            }
+//            String text = sb.toString();
+//            System.out.println(text);
+//            System.out.println("listwstststtstst");
+//            System.out.println(lm);
+//            for(Category item : vec) {
+//
+//                String cats = lm.toString();
+//                lm.addElement(cats);
+//
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+//                    categoryBox = new JComboBox(newList.toArray());
+//                    categoryBox.setSelectedItem(newList);
+                    categoryBox.setModel(newList);
+                    tfAddcat.setText("");
+
+                }
+
+            });
+//            }
+
+
+        }
+
+        public void addCategory(List<Category> category) {
+//            String cat = category.toString();
+          SwingUtilities.invokeLater(new Runnable() {
+              @Override
+              public void run() {
+//                  System.out.println(category.toString());
+
+                  DefaultListModel<String> lm = new DefaultListModel<>();
+                  for(Category cat: category){
+                      lm.addElement(cat.toString());
+                  }
+
+                  categoryBox = new JComboBox(lm.toArray());
+              }
+          });
+
         }
     }
 }
