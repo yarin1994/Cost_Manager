@@ -5,6 +5,7 @@ import il.ac.shenkar.proj.model.CostItem;
 import il.ac.shenkar.proj.model.CostManagerException;
 import il.ac.shenkar.proj.model.IModel;
 import il.ac.shenkar.proj.view.IView;
+import org.jfree.chart.JFreeChart;
 
 import java.util.Date;
 import java.util.List;
@@ -92,7 +93,6 @@ public class ViewModel implements IViewModel {
                     List<Category> categories = model.printCategories();
                     view.showMessage("Category added successfully");
                     view.printCategories(categories);
-//                    view.addCategory(categories);
                 } catch (CostManagerException e) {
                     e.printStackTrace();
                 }
@@ -102,19 +102,18 @@ public class ViewModel implements IViewModel {
     }
 
     @Override
-    public void getPie(Date start , Date end){
-        pool.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    model.pieChart(convertUtilToSql(start), convertUtilToSql(end));
+    public JFreeChart getPie(Date start , Date end){
+        JFreeChart chart = null;
+        try {
+            chart = model.pieChart(convertUtilToSql(start), convertUtilToSql(end));
 
-                } catch (CostManagerException e) {
-                    e.printStackTrace();
-                }
 
-            }
-        });
+        } catch (CostManagerException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return chart;
+        }
     }
     @Override
     public List<Category> printCategories(){
@@ -125,7 +124,6 @@ public class ViewModel implements IViewModel {
             e.printStackTrace();
         }
         finally {
-//            view.printCategories(categories);
             return categories;
         }
 

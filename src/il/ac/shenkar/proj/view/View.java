@@ -5,6 +5,8 @@ import il.ac.shenkar.proj.model.CostItem;
 import il.ac.shenkar.proj.model.CostManagerException;
 import il.ac.shenkar.proj.model.Currency;
 import il.ac.shenkar.proj.viewmodel.IViewModel;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,19 +59,9 @@ public class View implements IView {
         ui.showReport( vec);
     }
 
-//    @Override
-//    public void printCategories() {
-//
-//    }
-
     @Override
     public void printCategories(List<Category> vec) {
         ui.printCategories(vec);
-    }
-
-    @Override
-    public void addCategory(List<Category> category) {
-         ui.addCategory(category);
     }
 
 
@@ -131,7 +123,6 @@ public class View implements IView {
         private JLabel lbMessage;
         private JLabel lbId;
         private JLabel lbItemDate;
-//        private JList<String> list;
         private JScrollPane categoryScroll;
 
         private JFrame reportFrame;
@@ -145,9 +136,7 @@ public class View implements IView {
         private JTextArea reporttxt;
         private JButton reportBtn;
 
-
         private JComboBox categoryBox;
-        //            btbCategory = new JButton("Add Category");
 
 
 
@@ -228,10 +217,7 @@ public class View implements IView {
             panelTop.add(lbItemDate);
             panelTop.add(tfItemDate);
             panelTop.add(lbItemCategory);
-//            panelTop.add(categoryScroll);
-//            panelTop.add(categoryPane);
             panelTop.add(categoryBox);
-            //panelTop.add(list);
             panelTop.add(lbItemDescription);
             panelTop.add(tfItemDescription);
             panelTop.add(lbItemCurrency);
@@ -242,10 +228,7 @@ public class View implements IView {
             panelMain.setLayout(new BorderLayout());
 
             //setting GridLayout 1x1 as the LayoutManager for panelBottom
-            // panelBottom.setLayout(new GridLayout(1, 1));
             panelBottom.setLayout(new BorderLayout());
-            // panelLeftMessage.setLayout(new BorderLayout());
-            // panelRightMessage.setLayout(new BorderLayout());
 
             //adding the components to the bottom panel
             panelBottom.add(scrollPane);
@@ -390,7 +373,9 @@ public class View implements IView {
                     } catch (NumberFormatException | CostManagerException ex) {
                         View.this.showMessage("Insert another date, " + ex.getMessage());
                     }
-                    vm.getPie(Date.valueOf(startDate), Date.valueOf(endDate));
+                    JFreeChart chart = vm.getPie(Date.valueOf(startDate), Date.valueOf(endDate));
+                    ChartPanel chartP = new ChartPanel(chart);
+                    textPanel.add(chartP);
                 }
             });
 
@@ -401,7 +386,6 @@ public class View implements IView {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         String name = tfAddcat.getText();
-//                    System.out.println(name);
                         if(name == null || name.length() == 0){
                             throw new CostManagerException("category cannot be empty");
                         }
@@ -539,11 +523,10 @@ public class View implements IView {
                 });
 
             }
-            //@Override
-            //public void setViewModel(IViewModel vm) {
-            //
-            //}
         }
+
+
+
 
         public void showReport(List<CostItem> vec) {
             StringBuilder sb = new StringBuilder();
@@ -590,61 +573,18 @@ public class View implements IView {
 
 
         public void printCategories(List<Category> vec) {
-//            System.out.println();
-//            categoryList = (JList<String>) vec.toString();
-//            StringBuilder sb = new StringBuilder();
-//            DefaultListModel<String> lm = new DefaultListModel<>();
-//            List<String> newList = new ArrayList<>();
             DefaultComboBoxModel newList = new DefaultComboBoxModel();
             for(Category cat : vec){
-//                newList.add(cat.toString());
-
                 newList.addElement(cat);
-//                System.out.println(l);
-//                sb.append(l);
-//                sb.append("\n");
             }
-//            String text = sb.toString();
-//            System.out.println(text);
-//            System.out.println("listwstststtstst");
-//            System.out.println(lm);
-//            for(Category item : vec) {
-//
-//                String cats = lm.toString();
-//                lm.addElement(cats);
-//
+
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-//                    categoryBox = new JComboBox(newList.toArray());
-//                    categoryBox.setSelectedItem(newList);
                     categoryBox.setModel(newList);
                     tfAddcat.setText("");
-
                 }
-
             });
-//            }
-
-
-        }
-
-        public void addCategory(List<Category> category) {
-//            String cat = category.toString();
-          SwingUtilities.invokeLater(new Runnable() {
-              @Override
-              public void run() {
-//                  System.out.println(category.toString());
-
-                  DefaultListModel<String> lm = new DefaultListModel<>();
-                  for(Category cat: category){
-                      lm.addElement(cat.toString());
-                  }
-
-                  categoryBox = new JComboBox(lm.toArray());
-              }
-          });
-
         }
     }
 }

@@ -18,9 +18,7 @@ public interface IView {
 //    public void printCategories();
 
     public void printCategories(List<Category> categories);
-    public void addCategory(List<Category> category);
 
 
 
-    //..
 }

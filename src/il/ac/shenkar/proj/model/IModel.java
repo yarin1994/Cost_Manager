@@ -1,5 +1,7 @@
 package il.ac.shenkar.proj.model;
 
+import org.jfree.chart.JFreeChart;
+
 import java.sql.Date;
 import java.util.List;
 
@@ -18,8 +20,8 @@ public interface IModel {
 //   CATEGORY FUNCTIONS:
      public void addCategory(Category category) throws CostManagerException;
      public List<Category> printCategories() throws  CostManagerException;
-     public void deleteCategory(String category) throws CostManagerException;
-     public void pieChart(Date start, Date end) throws CostManagerException;
+//     public void deleteCategory(String category) throws CostManagerException;
+     public JFreeChart pieChart(Date start, Date end) throws CostManagerException;
 
 
 

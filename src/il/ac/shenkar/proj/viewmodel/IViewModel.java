@@ -4,6 +4,7 @@ import il.ac.shenkar.proj.model.Category;
 import il.ac.shenkar.proj.model.CostItem;
 import il.ac.shenkar.proj.model.IModel;
 import il.ac.shenkar.proj.view.IView;
+import org.jfree.chart.JFreeChart;
 
 import java.util.Date;
 import java.util.List;
@@ -18,5 +19,5 @@ public interface IViewModel {
     public void addCategory(Category category);
     public List<Category> printCategories();
 
-    public void getPie(Date start, Date end);
+    public JFreeChart getPie(Date start, Date end);
 }

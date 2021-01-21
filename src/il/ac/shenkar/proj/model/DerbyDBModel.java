@@ -1,11 +1,9 @@
 package il.ac.shenkar.proj.model;
 
-import javax.xml.namespace.QName;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
@@ -107,8 +105,6 @@ public class DerbyDBModel implements IModel {
             state.setString(5, item.getCurrency());
             state.execute();
 
-            //statement.execute(query);
-
 
         } catch (SQLException e) {
             throw new CostManagerException("problem with adding cost item ", e);
@@ -154,23 +150,22 @@ public class DerbyDBModel implements IModel {
         return result;
     }
 
-    public void pieChart(Date start, Date end) throws CostManagerException{
+    public JFreeChart pieChart(Date start, Date end) throws CostManagerException{
+        JFreeChart chart = null;
         try {
 
             rs = statement.executeQuery("SELECT category, SUM(summary) as total FROM CostItem WHERE date BETWEEN DATE ('" + start.toLocalDate() + "') AND DATE('" + end.toLocalDate() + "') group by category");
-//            while(rs.next()){
-//                String categoryName = rs.getString("category");
-//                Double tot = rs.getDouble("total");
 //
-//                result.add(new pieChart(categoryName, tot));
-//            }
             DefaultPieDataset dataset = new DefaultPieDataset();
             while (rs.next()) {
-                dataset.setValue(rs.getString("name"), Double.parseDouble(rs.getString("amount")));
+                dataset.setValue(rs.getString("category"), Double.parseDouble(rs.getString("total")));
+
             }
-            JFreeChart chart = ChartFactory.createPieChart("Category - amounts", dataset, true, true, false);
+            chart = ChartFactory.createPieChart("Category - amounts", dataset, true, true, false);
             int width = 560;
             int height = 370;
+
+//            IN CASE WE WILL WANT TO SAVE THE PIECHART AS FILE
 //            File pieChart = new File("Pie_Chart.jpeg");
 //            ChartUtilities.saveChartAsJPEG(pieChart, chart, width, height);
 
@@ -184,12 +179,20 @@ public class DerbyDBModel implements IModel {
                 throw new CostManagerException(throwables.getMessage());
             }
         }
+
+        return chart;
     }
 
-    public void printPiechart() throws  CostManagerException{
+    public void printPiechart(ResultSet result) throws  CostManagerException{
+//        for(int i=0; i<result.size(); i++)
+        while (true){
+            try {
+                System.out.println("category: " + result.getString("category") + " total: " + result.getDouble("total"));
 
-        for(int i=0; i<result.size(); i++){
-            System.out.println("category: " + result.get(i).getCategoryName() + " total: " + result.get(i).getTotal());
+                if (!result.next()) break;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
         System.out.println('\n');
 
@@ -225,15 +228,8 @@ public class DerbyDBModel implements IModel {
         try {
             rs = statement.executeQuery("SELECT * FROM categories");
             while (rs.next()){
-//                System.out.println(rs.getString(1));
-
                 String name = rs.getString("name");
-//                System.out.println(name);
-
-
-
                 categories.add(new Category(name));
-
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -259,16 +255,6 @@ public class DerbyDBModel implements IModel {
         }
     }
 
-//    public void getPieChart(Date start, Date end) throws CostManagerException{
-//        try {
-//            state = connection.prepareStatement("Select * from CostItem WHEN ");
-//            state.setString(1, category.getCategory());
-//            state.execute();
-//
-//        } catch (SQLException e) {
-//            throw new CostManagerException("problem with adding cost item ", e);
-//        }
-//    }
 
     public void killDB() throws CostManagerException {
         if (statement != null) try {
