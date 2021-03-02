@@ -15,6 +15,7 @@ public interface IView {
     public void showMessage(String text);
     public void showItems(List<CostItem> vec);
     public void showReport(List<CostItem> vec);
+    public void printCategoriesTest(List<Category> categories);
 //    public void printCategories();
 
     public void printCategories(List<Category> categories);

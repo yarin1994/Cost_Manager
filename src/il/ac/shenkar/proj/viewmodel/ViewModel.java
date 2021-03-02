@@ -116,17 +116,20 @@ public class ViewModel implements IViewModel {
         }
     }
     @Override
-    public List<Category> printCategories(){
-        List<Category> categories = null;
-        try {
-            categories = model.printCategories();
-        } catch (CostManagerException e) {
-            e.printStackTrace();
-        }
-        finally {
-            return categories;
-        }
+    public void printCategories(){
 
+        pool.submit(new Runnable() {
+            List<Category> categories = null;
+            @Override
+            public void run() {
+                try {
+                    categories = model.printCategories();
+                    view.printCategoriesTest(categories);
+                } catch (CostManagerException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 

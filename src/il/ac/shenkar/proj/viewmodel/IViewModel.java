@@ -17,7 +17,7 @@ public interface IViewModel {
     public void deleteCostItem(int idNumber);
     public void getReport(Date start, Date end);
     public void addCategory(Category category);
-    public List<Category> printCategories(); // change the return value
+    public void printCategories(); // change the return value
 
     public JFreeChart getPie(Date start, Date end);
 }

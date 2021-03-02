@@ -64,6 +64,11 @@ public class View implements IView {
         ui.printCategories(vec);
     }
 
+    @Override
+    public void printCategoriesTest(List<Category> vec) {
+        ui.printCategoriesTest(vec);
+    }
+
 
     /**
      *
@@ -75,6 +80,12 @@ public class View implements IView {
             @Override
             public void run() {
                 View.this.ui = new ApplicationUI();
+            // Waiting for the thread from the pool of the ViewModel to bring the categories to the component before ui starts
+                try{
+                Thread.sleep(2000);
+            }catch(InterruptedException err){
+                System.out.println(err.getMessage());
+            }
                 View.this.ui.start();
             }
         });
@@ -183,13 +194,7 @@ public class View implements IView {
             tfAddcat = new JTextField(10);
             tfDelete = new JTextField(10);
 
-
-            List<Category> cats = new ArrayList<>();
-            cats = vm.printCategories();
-            DefaultComboBoxModel catList = new DefaultComboBoxModel(cats.toArray());
-            categoryBox = new JComboBox(catList);
-
-
+            vm.printCategories();
 
 
             // Creating GET REPORT window
@@ -217,7 +222,9 @@ public class View implements IView {
             panelTop.add(lbItemDate);
             panelTop.add(tfItemDate);
             panelTop.add(lbItemCategory);
+            System.out.println("before");
             panelTop.add(categoryBox);
+            System.out.println("after");
             panelTop.add(lbItemDescription);
             panelTop.add(tfItemDescription);
             panelTop.add(lbItemCurrency);
@@ -508,6 +515,12 @@ public class View implements IView {
             //displaying the window
             frame.setSize(1400, 600);
             frame.setVisible(true);
+        }
+
+        public void printCategoriesTest(List<Category> categories) {
+            DefaultComboBoxModel catList = new DefaultComboBoxModel(categories.toArray());
+            categoryBox = new JComboBox(catList);
+            System.out.println("checking");
         }
 
         // Shows the user the informative message about the actions the he did in the screen

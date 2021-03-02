@@ -33,8 +33,8 @@ public class DerbyDBModel implements IModel {
         }
     }
     public DerbyDBModel() throws CostManagerException {
-        createConnections();
-        killDB();
+//        createConnections();
+//        killDB();
     }
 
     public List<CostItem> getCostItems() throws CostManagerException {
