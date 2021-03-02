@@ -2,13 +2,16 @@ package il.ac.shenkar.proj.model;
 
 import org.jfree.chart.JFreeChart;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
 public interface IModel {
 //   DB CREATION AND KILL:
      public void createConnections() throws CostManagerException;
-     public void killDB() throws CostManagerException;
+     public void killDB(Connection connection, Statement statement, ResultSet rs) throws CostManagerException;
 
 //   COSTITEM FUNCTIONS:
      public void addCostItem(CostItem item) throws CostManagerException;

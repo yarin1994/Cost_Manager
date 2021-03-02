@@ -82,7 +82,7 @@ public class View implements IView {
                 View.this.ui = new ApplicationUI();
             // Waiting for the thread from the pool of the ViewModel to bring the categories to the component before ui starts
                 try{
-                Thread.sleep(2000);
+                Thread.sleep(3000);
             }catch(InterruptedException err){
                 System.out.println(err.getMessage());
             }

@@ -125,6 +125,7 @@ public class ViewModel implements IViewModel {
             @Override
             public void run() {
                 try {
+                    System.out.println("SSSSS");
                     categories = model.printCategories();
                     view.printCategoriesTest(categories);
                 } catch (CostManagerException e) {
