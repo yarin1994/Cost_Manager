@@ -94,6 +94,7 @@ public class ViewModel implements IViewModel {
                     view.showMessage("Category added successfully");
                     view.printCategories(categories);
                 } catch (CostManagerException e) {
+                    System.out.println("Could not add category!!");
                     e.printStackTrace();
                 }
             }
@@ -109,6 +110,7 @@ public class ViewModel implements IViewModel {
 
 
         } catch (CostManagerException e) {
+            System.out.println("Could not show Pie Chart!");
             e.printStackTrace();
         }
         finally {
@@ -126,6 +128,7 @@ public class ViewModel implements IViewModel {
                     categories = model.printCategories();
                     view.printCategoriesTest(categories);
                 } catch (CostManagerException e) {
+                    System.out.println("Could not show categories!");
                     e.printStackTrace();
                 }
             }

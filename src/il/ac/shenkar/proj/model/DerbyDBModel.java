@@ -30,11 +30,11 @@ public class DerbyDBModel implements IModel {
             killDB();
         }catch (CostManagerException err){
             System.out.println(err.getMessage());
+            throw new CostManagerException("Could not open DB", err);
         }
     }
     public DerbyDBModel() throws CostManagerException {
-//        createConnections();
-//        killDB();
+
     }
 
     public List<CostItem> getCostItems() throws CostManagerException {
@@ -99,6 +99,7 @@ public class DerbyDBModel implements IModel {
 
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e);
+            throw new CostManagerException("Could not open connection to DB", e);
         }
     }
 
@@ -142,6 +143,7 @@ public class DerbyDBModel implements IModel {
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            throw new CostManagerException("Could not print cost item", throwables);
         }
 
 
@@ -161,6 +163,7 @@ public class DerbyDBModel implements IModel {
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            throw new CostManagerException("Could not get report ", throwables);
         }
         killDB();
         return result;
@@ -187,6 +190,7 @@ public class DerbyDBModel implements IModel {
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            throw new CostManagerException("Could not show piechart", throwables);
         }
         finally {
             if(rs != null) try {
@@ -208,6 +212,7 @@ public class DerbyDBModel implements IModel {
                 if (!result.next()) break;
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
+                throw new CostManagerException("Could not print piechart", throwables);
             }
         }
         System.out.println('\n');
@@ -252,6 +257,7 @@ public class DerbyDBModel implements IModel {
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            throw new CostManagerException("Could not print categories", throwables);
         } finally {
             if (rs != null) try {
                 rs.close();
@@ -263,7 +269,7 @@ public class DerbyDBModel implements IModel {
 
         return categories;
     }
-
+    // Maybe throw it!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     public void deleteCategory(String category) throws CostManagerException{
         try{
             query = "delete from categories where name = "+ "'" + category + "'";
@@ -284,10 +290,12 @@ public class DerbyDBModel implements IModel {
         if (connection != null) try {
             this.connection.close();
         } catch (SQLException e) {
+            throw new CostManagerException("Could not killDB", e);
         }
         if (rs != null) try {
             rs.close();
         } catch (Exception e) {
+            throw new CostManagerException("Could not killDB", e);
         }
     }
 }

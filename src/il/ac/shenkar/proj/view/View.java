@@ -448,10 +448,12 @@ public class View implements IView {
                             try {
                                 dateFormat.parse(costDate.trim());
                             } catch (ParseException pe) {
+                                System.out.println("Data is not valid!");
                                 View.this.showMessage("Date is not valid");
                                 throw new CostManagerException("date is not valid");
                             }
                         } catch (NumberFormatException | CostManagerException ex) {
+                            System.out.println("Insert another date");
                             View.this.showMessage("Insert another date, " + ex.getMessage());
                         }
                         // Creates Cost item object and move it to the view-model object
@@ -460,8 +462,10 @@ public class View implements IView {
 
 
                     } catch (NumberFormatException ex) {
+                        System.out.println("problem with entered sum... ");
                         View.this.showMessage("problem with entered sum... " + ex.getMessage());
                     } catch (CostManagerException ex) {
+                        System.out.println("problem with entered data... ");
                         View.this.showMessage("problem with entered data... problem with description... " + ex.getMessage());
                     }
                 }
@@ -475,6 +479,7 @@ public class View implements IView {
                         double idToDelete = Double.parseDouble(tfDelete.getText());
                         vm.deleteCostItem((int) idToDelete);
                     } catch (NumberFormatException ex) {
+                        System.out.println("problem with entered id... ");
                         View.this.showMessage("problem with entered id... " + ex.getMessage());
                     }
                 }
@@ -496,6 +501,7 @@ public class View implements IView {
                             throw new CostManagerException("date is not valid");
                         }
                     } catch (NumberFormatException | CostManagerException ex) {
+                        System.out.println("Insert another date ");
                         View.this.showMessage("Insert another date, " + ex.getMessage());
                     }
                     try {
@@ -503,10 +509,12 @@ public class View implements IView {
                         try {
                             dateFormat.parse(endDate.trim());
                         } catch (ParseException pe) {
+                            System.out.println("Data is not valid ");
                             View.this.showMessage("Date is not valid");
-                            throw new CostManagerException("date is not valid");
+                            throw new CostManagerException("Date is not valid");
                         }
                     } catch (NumberFormatException | CostManagerException ex) {
+                        System.out.println("Insert another date");
                         View.this.showMessage("Insert another date, " + ex.getMessage());
                     }
                     vm.getReport(Date.valueOf(startDate), Date.valueOf(endDate));
