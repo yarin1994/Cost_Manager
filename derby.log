@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
-Thu Jan 21 15:15:04 IST 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0177-2515-88df-0000078af8a8 
-on database directory /Users/yarinmizrahi/IdeaProjects/proj/CostManagerDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@73d16e93 
-Loaded from file:/Users/yarinmizrahi/Downloads/db-derby-10.14.2.0-bin/lib/derby.jar
+Tue Mar 02 15:32:51 IST 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0177-f324-3027-00000f9c3930 
+on database directory /Users/yalisofer/IdeaProjects/Cost_Manager/CostManagerDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@73d16e93 
+Loaded from file:/Users/yalisofer/Downloads/db-derby-10.14.2.0-bin/lib/derby.jar
 java.vendor=Oracle Corporation
 java.runtime.version=15.0.1+9-18
-user.dir=/Users/yarinmizrahi/IdeaProjects/proj
+user.dir=/Users/yalisofer/IdeaProjects/Cost_Manager
 os.name=Mac OS X
 os.arch=x86_64
 os.version=10.16

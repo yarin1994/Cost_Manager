@@ -19,17 +19,32 @@ public class DerbyDBModel implements IModel {
     public PreparedStatement categoryState;
     ArrayList<pieChart> result = new ArrayList<pieChart>();
 
-
+    public void createTable() throws CostManagerException{
+        try {
+            createConnections();
+            //            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null ,  date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
+//            query = "create table categories(name varchar(25) primary key )";
+//            query = "insert into categories values 'Food'";
+//            statement.execute("DROP TABLE Categories");
+//                        statement.execute(query);
+            killDB();
+        }catch (CostManagerException err){
+            System.out.println(err.getMessage());
+        }
+    }
     public DerbyDBModel() throws CostManagerException {
         createConnections();
+        killDB();
     }
 
     public List<CostItem> getCostItems() throws CostManagerException {
         List<CostItem> costItems = new ArrayList<CostItem>();
 
         try {
+            createConnections();
             rs = statement.executeQuery("SELECT * FROM CostItem");
             while (rs.next()) {
+                System.out.println("lalal");
                 int id = rs.getInt("id");
                 Date date = rs.getDate("date");
                 Double sum = rs.getDouble("summary");
@@ -54,6 +69,7 @@ public class DerbyDBModel implements IModel {
                 //Build the List<CostItems>
                 costItems.add(new CostItem(id,date,category,description, sum,currency));
             }
+            killDB();
         } catch (SQLException e) {
             throw new CostManagerException(e.getMessage());
         } finally {
@@ -79,11 +95,7 @@ public class DerbyDBModel implements IModel {
 //            this.connection = DriverManager.getConnection(protocol);
             System.out.println("Connected to DB\n");
             this.statement = this.connection.createStatement();
-//            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null ,  date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
-//            query = "create table categories(name varchar(25) primary key )";
-//            query = "insert into categories values 'Food'";
-//            statement.execute("DROP TABLE Categories");
-//                        statement.execute(query);
+
 
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e);
@@ -95,7 +107,7 @@ public class DerbyDBModel implements IModel {
 
 
         try {
-
+            createConnections();
             state = this.connection.prepareStatement("insert into CostItem(date,category,description,summary,currency) values (?,?,?,?,?)");
 
             state.setDate(1, item.getDate());
@@ -105,13 +117,14 @@ public class DerbyDBModel implements IModel {
             state.setString(5, item.getCurrency());
             state.execute();
 
-
+        killDB();
         } catch (SQLException e) {
             throw new CostManagerException("problem with adding cost item ", e);
         }
     }
 
     public void printCostItem() throws  CostManagerException {
+        createConnections();
         try {
             rs = statement.executeQuery("SELECT * FROM CostItem");
             while (rs.next()) {
@@ -122,7 +135,7 @@ public class DerbyDBModel implements IModel {
                 System.out.println("sum : " + rs.getDouble(5));
                 System.out.println("currency : " + rs.getString(6));
                 System.out.println('\n');
-
+                killDB();
 
 
             }
@@ -136,7 +149,9 @@ public class DerbyDBModel implements IModel {
 
     public List<CostItem> getReport(Date start, Date end) throws CostManagerException{
         List<CostItem> result = new ArrayList<CostItem>();
+
         try {
+            createConnections();
             rs = statement.executeQuery("SELECT * FROM CostItem WHERE date BETWEEN DATE ('" + start.toLocalDate() + "') AND DATE('" + end.toLocalDate() + "')");
             while(rs.next()){
                 result.add(new CostItem((rs.getInt(1)),(rs.getDate(2)), rs.getString(3), rs.getString(4), rs.getDouble(5), Currency.valueOf(rs.getString(6))));
@@ -147,6 +162,7 @@ public class DerbyDBModel implements IModel {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        killDB();
         return result;
     }
 
@@ -199,11 +215,12 @@ public class DerbyDBModel implements IModel {
     }
 
     public void deleteCostItem(int id) throws CostManagerException {
-
         try{
+            createConnections();
             query = "delete from CostItem where id = "+ id;
             statement.execute(query);
             System.out.println("Successfully deleted "+ id);
+            killDB();
         }
         catch (SQLException e){
             throw new CostManagerException("Problem deleting cost-item", e);
@@ -211,11 +228,13 @@ public class DerbyDBModel implements IModel {
     }
 
     public void addCategory(Category category) throws CostManagerException {
+
         try {
+            createConnections();
             state = connection.prepareStatement("insert into categories(name) values (?)");
             state.setString(1, category.getCategory());
             state.execute();
-
+            killDB();
         } catch (SQLException e) {
             throw new CostManagerException("problem with adding cost item ", e);
         }
@@ -223,7 +242,7 @@ public class DerbyDBModel implements IModel {
 
     public List<Category> printCategories() throws  CostManagerException{
         List<Category> categories = new ArrayList<Category>();
-
+        createConnections();
 
         try {
             rs = statement.executeQuery("SELECT * FROM categories");
@@ -239,6 +258,7 @@ public class DerbyDBModel implements IModel {
             } catch (SQLException e) {
                 throw new CostManagerException(e.getMessage());
             }
+            killDB();
         }
 
         return categories;
