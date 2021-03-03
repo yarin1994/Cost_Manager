@@ -40,6 +40,11 @@ public class View implements IView {
     private ApplicationUI ui;
 
     @Override
+    public void displayPieChart(JFreeChart map) {
+        ui.displayPieChart(map);
+    }
+
+    @Override
     public void setViewModel(IViewModel vm) {
         this.vm = vm;
     }
@@ -139,6 +144,7 @@ public class View implements IView {
         private JFrame reportFrame;
         private JPanel topPanel;
         private JPanel textPanel;
+        private JPanel piePanel;
         private JLabel from;
         private JLabel until;
         private JTextField tfItemDate;
@@ -200,6 +206,7 @@ public class View implements IView {
             // Creating GET REPORT window
             reportFrame = new JFrame("Get Report");
             textPanel = new JPanel();
+            piePanel = new JPanel();
             topPanel = new JPanel();
             from = new JLabel("From");
             until = new JLabel("Until");
@@ -293,13 +300,15 @@ public class View implements IView {
             //creating textPanel
             textPanel.add(reporttxt);
 
+
             //adding top panel and text panel to the report window
             reportFrame.add(topPanel, BorderLayout.NORTH);
             reportFrame.add(textPanel, BorderLayout.CENTER);
+            reportFrame.add(piePanel, BorderLayout.SOUTH);
 
 
             //displaying the window
-            reportFrame.setSize(1400, 600);
+            reportFrame.setSize(1400, 1000);
             reportFrame.setVisible(false);
             // ---------------------- End of GET REPORT -------------------------------
 
@@ -378,9 +387,7 @@ public class View implements IView {
                     } catch (NumberFormatException | CostManagerException ex) {
                         View.this.showMessage("Insert another date, " + ex.getMessage());
                     }
-                    JFreeChart chart = vm.getPie(Date.valueOf(startDate), Date.valueOf(endDate));
-                    ChartPanel chartP = new ChartPanel(chart);
-                    textPanel.add(chartP);
+                    vm.getPie(Date.valueOf(startDate), Date.valueOf(endDate));
                 }
             });
 
@@ -543,7 +550,22 @@ public class View implements IView {
             }
         }
 
-
+        public void displayPieChart(JFreeChart map) {
+            ChartPanel chartP = new ChartPanel(map);
+            piePanel.removeAll();
+            if (SwingUtilities.isEventDispatchThread()) {
+                piePanel.add(chartP, BorderLayout.CENTER);
+                SwingUtilities.updateComponentTreeUI(reportFrame);
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        piePanel.add(chartP, BorderLayout.CENTER);
+                        SwingUtilities.updateComponentTreeUI(reportFrame);
+                    }
+                });
+            }
+        }
 
 
         public void showReport(List<CostItem> vec) {

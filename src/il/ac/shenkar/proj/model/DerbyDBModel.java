@@ -181,7 +181,8 @@ public class DerbyDBModel implements IModel {
         Statement statement = null;
         ResultSet rs = null;
         try {
-
+            connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
+            statement = connection.createStatement();
             rs = statement.executeQuery("SELECT category, SUM(summary) as total FROM CostItem WHERE date BETWEEN DATE ('" + start.toLocalDate() + "') AND DATE('" + end.toLocalDate() + "') group by category");
 //
             DefaultPieDataset dataset = new DefaultPieDataset();

@@ -13,14 +13,13 @@ public class CostItem {
 
     @Override
     public String toString() {
-        return "CostItem{" +
-                "id='" + id + '\'' +
-                ", date=" + date +
-                ", category='" + category + '\'' +
-                ", description='" + description + '\'' +
-                ", sum=" + sum +
-                ", currency=" + currency +
-                '}';
+        return "CostItem:" + '\t' +
+                "id='" + id + '\'' + '\t' +
+                "|      date=" + date + '\t' +
+                "|      category='" + category + '\'' + '\t' +
+                "|      description='" + description + '\'' + '\t' +
+                "|      sum=" + sum + '\t' +
+                "|      currency=" + currency + '\t' ;
     }
 
     public CostItem(String category, String description, double sum, Currency currency) {

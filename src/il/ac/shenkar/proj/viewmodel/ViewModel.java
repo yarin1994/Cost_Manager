@@ -103,18 +103,16 @@ public class ViewModel implements IViewModel {
     }
 
     @Override
-    public JFreeChart getPie(Date start , Date end){
+    public void getPie(Date start , Date end){
         JFreeChart chart = null;
         try {
             chart = model.pieChart(convertUtilToSql(start), convertUtilToSql(end));
-
-
         } catch (CostManagerException e) {
             System.out.println("Could not show Pie Chart!");
             e.printStackTrace();
         }
         finally {
-            return chart;
+            view.displayPieChart(chart);
         }
     }
 
