@@ -222,9 +222,7 @@ public class View implements IView {
             panelTop.add(lbItemDate);
             panelTop.add(tfItemDate);
             panelTop.add(lbItemCategory);
-            System.out.println("before");
             panelTop.add(categoryBox);
-            System.out.println("after");
             panelTop.add(lbItemDescription);
             panelTop.add(tfItemDescription);
             panelTop.add(lbItemCurrency);
@@ -528,7 +526,6 @@ public class View implements IView {
         public void printCategoriesTest(List<Category> categories) {
             DefaultComboBoxModel catList = new DefaultComboBoxModel(categories.toArray());
             categoryBox = new JComboBox(catList);
-            System.out.println("checking");
         }
 
         // Shows the user the informative message about the actions the he did in the screen

@@ -117,17 +117,17 @@ public class ViewModel implements IViewModel {
             return chart;
         }
     }
+
+
     @Override
     public void printCategories(){
-
         pool.submit(new Runnable() {
             List<Category> categories = null;
             @Override
             public void run() {
                 try {
-                    System.out.println("SSSSS");
                     categories = model.printCategories();
-                    view.printCategoriesTest(categories);
+                    view.printCategoriesTest(categories); // Fix name!!!!!!!!!!!!!!!!!!!!!!
                 } catch (CostManagerException e) {
                     System.out.println("Could not show categories!");
                     e.printStackTrace();

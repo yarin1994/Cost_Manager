@@ -11,24 +11,21 @@ import org.jfree.data.general.DefaultPieDataset;
 public class DerbyDBModel implements IModel {
     public static String driver = "org.apache.derby.jdbc.EmbeddedDriver";
     public static String connectionString = "jdbc:derby:";
-    public String query = "";
-    public PreparedStatement state;
-    public PreparedStatement categoryState;
-    ArrayList<pieChart> result = new ArrayList<pieChart>();
 
     public void createTable() throws CostManagerException{
         Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
+        String query = "";
         try {
             //getting connection by calling get connection
             connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
             statement = connection.createStatement();
-            //            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null ,  date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
+//            query = "CREATE TABLE CostItem(id int GENERATED ALWAYS AS IDENTITY(start with 1, increment by 1) not null ,  date Date, category varchar(50), description varchar (256) , summary double, currency varchar (6))";
 //            query = "create table categories(name varchar(25) primary key )";
 //            query = "insert into categories values 'Food'";
 //            statement.execute("DROP TABLE Categories");
-//                        statement.execute(query);
+//            statement.execute(query);
             killDB(connection,statement, rs);
         }catch (CostManagerException | SQLException err){
             System.out.println(err.getMessage());
@@ -50,7 +47,6 @@ public class DerbyDBModel implements IModel {
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT * FROM CostItem");
             while (rs.next()) {
-                System.out.println("lalal");
                 int id = rs.getInt("id");
                 Date date = rs.getDate("date");
                 Double sum = rs.getDouble("summary");
@@ -105,6 +101,7 @@ public class DerbyDBModel implements IModel {
         Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
+        PreparedStatement state;
         try {
             //getting connection by calling get connection
             connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
@@ -235,6 +232,7 @@ public class DerbyDBModel implements IModel {
         Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
+        String query = "";
         try{
             //getting connection by calling get connection
             connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
@@ -253,6 +251,7 @@ public class DerbyDBModel implements IModel {
         Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
+        PreparedStatement state;
         try {
             //getting connection by calling get connection
             connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
@@ -276,8 +275,6 @@ public class DerbyDBModel implements IModel {
             //getting connection by calling get connection
             connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
             statement = connection.createStatement();
-            System.out.println(statement);
-            System.out.println(connection);
             rs = statement.executeQuery("SELECT * FROM categories");
             while (rs.next()){
                 String name = rs.getString("name");
@@ -302,6 +299,7 @@ public class DerbyDBModel implements IModel {
         Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
+        String query = "";
         try{
             query = "delete from categories where name = "+ "'" + category + "'";
             statement.execute(query);
