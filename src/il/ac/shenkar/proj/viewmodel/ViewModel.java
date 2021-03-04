@@ -1,3 +1,7 @@
+/**
+ * @author Yahli Sofer - 205701212
+ * @author Yarin Mizrahi - 205663917
+ * */
 package il.ac.shenkar.proj.viewmodel;
 
 import il.ac.shenkar.proj.model.Category;
