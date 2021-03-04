@@ -17,9 +17,7 @@ import java.awt.event.WindowEvent;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
 
 /**
  *
@@ -70,11 +68,10 @@ public class View implements IView {
     }
 
     @Override
-    public void printCategoriesTest(List<Category> vec) {
-        ui.printCategoriesTest(vec);
+    public void printCategoriesPre(List<Category> vec) {
+        ui.printCategoriesPre(vec);
     }
-
-
+    
     /**
      *
      * Constructor to build the ui and than use start method to run the thread.
@@ -107,7 +104,6 @@ public class View implements IView {
      * */
     public class ApplicationUI //implements IView
     {
-        //
         private JFrame frame;
         private JPanel panelTop;
         private JPanel panelBottom;
@@ -140,7 +136,6 @@ public class View implements IView {
         private JLabel lbId;
         private JLabel lbItemDate;
         private JScrollPane categoryScroll;
-
         private JFrame reportFrame;
         private JPanel topPanel;
         private JPanel textPanel;
@@ -152,16 +147,7 @@ public class View implements IView {
         private JTextField untiltxt;
         private JTextArea reporttxt;
         private JButton reportBtn;
-
         private JComboBox categoryBox;
-
-
-
-        // private JFrame delFrame;
-        // private JPanel delPanel;
-        // private JLabel delLabel;
-        // private JButton delBtn;
-
 
         public ApplicationUI() {
             //creating the MAIN window
@@ -199,10 +185,9 @@ public class View implements IView {
             tfMessage.setEditable(false);
             tfAddcat = new JTextField(10);
             tfDelete = new JTextField(10);
-
+            // Brings the categories from DB while
             vm.printCategories();
-
-
+            
             // Creating GET REPORT window
             reportFrame = new JFrame("Get Report");
             textPanel = new JPanel();
@@ -217,12 +202,9 @@ public class View implements IView {
             btBack = new JButton("Back");
             btPie = new JButton("PieChart");
             reporttxt.setEditable(false);
-
-
         }
 
         public void start() {
-
             //adding the components to the top panel
             panelTop.add(lbItemSum);
             panelTop.add(tfItemSum);
@@ -263,8 +245,7 @@ public class View implements IView {
 
             //setting a different color for the panel message
             panelMessage.setBackground(Color.YELLOW);
-
-
+            
             //setting the window layout manager
             frame.setLayout(new BorderLayout());
 
@@ -299,26 +280,24 @@ public class View implements IView {
 
             //creating textPanel
             textPanel.add(reporttxt);
-
-
+            
             //adding top panel and text panel to the report window
             reportFrame.add(topPanel, BorderLayout.NORTH);
             reportFrame.add(textPanel, BorderLayout.CENTER);
             reportFrame.add(piePanel, BorderLayout.SOUTH);
-
-
-            //displaying the window
+            
+            //Displaying the window
             reportFrame.setSize(1400, 1000);
             reportFrame.setVisible(false);
             // ---------------------- End of GET REPORT -------------------------------
 
-            //handling window closing
+            //Handling window closing
             frame.addWindowListener(new WindowAdapter() {
                 /**
                  * Invoked when a window is in the process of being closed.
                  * The close operation can be overridden at this point.
                  *
-                 * @param e
+                 * Kills the program.
                  */
                 @Override
                 public void windowClosing(WindowEvent e) {
@@ -340,17 +319,17 @@ public class View implements IView {
                     frame.setVisible(true);
                 }
             });
-//
-//             Switches between the main page to the get report page
+
+//           Switches between the main page to the get report page
             btGetReport.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     frame.setVisible(false);
                     reportFrame.setVisible(true);
-
                 }
             });
 
+//          Switches between the report page to the get main page
             btBack.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -359,6 +338,7 @@ public class View implements IView {
                 }
             });
 
+//          Creates the pieChart and displays it.
             btPie.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -390,9 +370,7 @@ public class View implements IView {
                     vm.getPie(Date.valueOf(startDate), Date.valueOf(endDate));
                 }
             });
-
-
-
+            
             btCategory.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -409,20 +387,17 @@ public class View implements IView {
                     }
                 }
             });
-
-
+            
             //handling cost item adding button click
             btAddCostItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-
                         // get the description
                         String description = tfItemDescription.getText();
                         if (description == null || description.length() == 0) {
                             throw new CostManagerException("description cannot be empty");
                         }
-
                         // gets the sum
                         double sum = Double.parseDouble(tfItemSum.getText());
                         String currencyStr = tfItemCurrency.getText();
@@ -439,7 +414,6 @@ public class View implements IView {
                                 break;
                             default:
                                 currency = Currency.USD;
-
                         }
 
                         // Get the category
@@ -464,8 +438,7 @@ public class View implements IView {
                         // Creates Cost item object and move it to the view-model object
                         CostItem item = new CostItem(Date.valueOf(costDate), category, description, sum, currency);
                         vm.addCostItem(item);
-
-
+                        
                     } catch (NumberFormatException ex) {
                         System.out.println("problem with entered sum... ");
                         View.this.showMessage("problem with entered sum... " + ex.getMessage());
@@ -530,12 +503,19 @@ public class View implements IView {
             frame.setVisible(true);
         }
 
-        public void printCategoriesTest(List<Category> categories) {
+        /**
+         * shows all of the categories exists in our DB in the combobox.
+         * @param categories - list of all categories.
+         */
+        public void printCategoriesPre(List<Category> categories) {
             DefaultComboBoxModel catList = new DefaultComboBoxModel(categories.toArray());
             categoryBox = new JComboBox(catList);
         }
-
-        // Shows the user the informative message about the actions the he did in the screen
+        
+        /**
+         * Shows the user the informative message about the actions the he did in the screen
+         * @param text - relevant messgae to a spesifif action.
+         */
         public void showMessage(String text) {
             if (SwingUtilities.isEventDispatchThread()) {
                 tfMessage.setText(text);
@@ -546,10 +526,13 @@ public class View implements IView {
                         tfMessage.setText(text);
                     }
                 });
-
             }
         }
 
+        /**
+         * This functoin prints the pieChart dataset as a pie on our gui app.
+         * @param map - all of the costItems groupd by category between two chosen dates.
+         */
         public void displayPieChart(JFreeChart map) {
             ChartPanel chartP = new ChartPanel(map);
             piePanel.removeAll();
@@ -567,7 +550,10 @@ public class View implements IView {
             }
         }
 
-
+        /**
+         * This function prnts on the getReport page all of the costItems in textual view between two chosen dates.
+         * @param vec - list of all the costItems between two dates.
+         */
         public void showReport(List<CostItem> vec) {
             StringBuilder sb = new StringBuilder();
             for (CostItem item : vec) {
@@ -585,11 +571,13 @@ public class View implements IView {
                         reporttxt.setText(text);
                     }
                 });
-
             }
         }
-
-        // Shows all costs to the user from DB
+        
+        /**
+         * Shows all costs to the user from DB.
+         * @param items - list of all the costItems.
+         */
         public void showItems(List<CostItem> items) {
             StringBuilder sb = new StringBuilder();
             for (CostItem item : items) {
@@ -607,11 +595,13 @@ public class View implements IView {
                         textArea.setText(text);
                     }
                 });
-
             }
         }
 
-
+        /**
+         * shows all of the categories exists in our DB in the combobox.
+         * @param vec - list of all categories.
+         */
         public void printCategories(List<Category> vec) {
             DefaultComboBoxModel newList = new DefaultComboBoxModel();
             for(Category cat : vec){

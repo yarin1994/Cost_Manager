@@ -11,7 +11,6 @@ import il.ac.shenkar.proj.viewmodel.ViewModel;
 public class Application {
     public static void main(String args[]) {
 
-
         //creating the application components
         IModel model = null;
         try {
@@ -22,12 +21,9 @@ public class Application {
         IView view = new View();
         IViewModel vm = new ViewModel();
     
-
         //connecting the components with each other
         view.setViewModel(vm);
         vm.setModel(model);
         vm.setView(view);
-
-
     }
 }

@@ -18,6 +18,5 @@ public interface IViewModel {
     public void getReport(Date start, Date end);
     public void addCategory(Category category);
     public void printCategories();
-
     public void getPie(Date start, Date end);
 }

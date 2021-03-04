@@ -18,10 +18,23 @@ public class ViewModel implements IViewModel {
     private IView view;
     private ExecutorService pool;
 
+    /**
+     * SetView() - setting the view module of the app.
+ *          addCategory() - adding a new category to DB, threaded function.
+ *          addCostItem() - adding a new cost item to DB, threaded function.
+ *          getCostForPie() - sending dates from view to the model for receiving table to show in pieChart
+ *          getCostForTable() - sending dates from view to the model for receiving table to show in table.
+ *          getCategories() - getting all the updated categories from the model
+ *          getCurrencies() - returning al Currency enum members.
+     */
     public ViewModel() {
         pool = Executors.newFixedThreadPool(10);
     }
 
+    /**
+     * setter function for view.
+     * @param view
+     */
     @Override
     public void setView(IView view) {
         this.view = view;
@@ -31,7 +44,11 @@ public class ViewModel implements IViewModel {
     public void setModel(IModel model) {
         this.model = model;
     }
-
+    
+    /**
+        addCategory() - adding a new category to DB, threaded function.
+        Sends data from DB(model) to the view.
+    */
     @Override
     public void addCostItem(CostItem item) {
         pool.submit(new Runnable() {
@@ -47,9 +64,12 @@ public class ViewModel implements IViewModel {
                 }
             }
         });
-
     }
 
+    /**
+     * deleteCostItem - sends the specific costItem id to the model for deletion.
+     * @param idNumber - the costItem id.
+     */
     @Override
     public void deleteCostItem(int idNumber) {
         pool.submit(new Runnable() {
@@ -67,6 +87,11 @@ public class ViewModel implements IViewModel {
         });
     }
 
+    /**
+     * getReport calles the getReport functino in the model and returns a list of all cost items between two dates.
+     * @param start - start date.
+     * @param end - end date.
+     */
     @Override
     public void getReport(Date start, Date end){
         pool.submit(new Runnable() {
@@ -83,6 +108,10 @@ public class ViewModel implements IViewModel {
         });
     }
 
+    /**
+     * addCategory sends a string with a new category name to the model.
+     * @param category - string holds the name of a new category.
+     */
     @Override
     public void addCategory(Category category) {
         pool.submit(new Runnable() {
@@ -99,9 +128,12 @@ public class ViewModel implements IViewModel {
                 }
             }
         });
-
     }
-
+/**
+     * getPie calles the pieChart function in the model and returns a pieChart to view through the view.
+     * @param start - start date.
+     * @param end - end date.
+     */
     @Override
     public void getPie(Date start , Date end){
         JFreeChart chart = null;
@@ -116,7 +148,9 @@ public class ViewModel implements IViewModel {
         }
     }
 
-
+    /**
+     * printCategories calles the function in the model and get a return value of a list holds all of the categories.
+     */
     @Override
     public void printCategories(){
         pool.submit(new Runnable() {
@@ -125,7 +159,7 @@ public class ViewModel implements IViewModel {
             public void run() {
                 try {
                     categories = model.printCategories();
-                    view.printCategoriesTest(categories); // Fix name!!!!!!!!!!!!!!!!!!!!!!
+                    view.printCategoriesPre(categories);
                 } catch (CostManagerException e) {
                     System.out.println("Could not show categories!");
                     e.printStackTrace();
@@ -134,7 +168,10 @@ public class ViewModel implements IViewModel {
         });
     }
 
-
+    /**
+     * convertUtilToSql is a util function that converts the date to a sql type date.
+     * @param uDate - Changes the date to a sql date type.
+     */
     private static java.sql.Date convertUtilToSql(java.util.Date uDate) {
         java.sql.Date sDate = new java.sql.Date(uDate.getTime());
         return sDate;

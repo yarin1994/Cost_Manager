@@ -12,6 +12,12 @@ public class DerbyDBModel implements IModel {
     public static String driver = "org.apache.derby.jdbc.EmbeddedDriver";
     public static String connectionString = "jdbc:derby:";
 
+    /**
+     * createTable function:
+     * in this function we have two queries which we used in order to open our tables.
+     * we have total of 2 tables: CostItem and Categories.
+     * @throws CostManagerException
+     */
     public void createTable() throws CostManagerException{
         Connection connection = null;
         Statement statement = null;
@@ -32,10 +38,24 @@ public class DerbyDBModel implements IModel {
             throw new CostManagerException("Could not open DB", err);
         }
     }
+
+
+    /**
+     * C'tor
+     * calles createConnections and forName one time in this program runtime.
+     * @throws CostManagerException
+     */
     public DerbyDBModel() throws CostManagerException {
         createConnections();
     }
 
+    /**
+     * In this function we create a list which will hold all of the costItems details.
+     * the data will be pulled out of our data base.
+     * in this function we have a while loop which its goal is to go through all of our elements and save them on the list.
+     * @return - the return value is a list of all the costItems we have on the DB.
+     * @throws CostManagerException
+     */
     public List<CostItem> getCostItems() throws CostManagerException {
         List<CostItem> costItems = new ArrayList<CostItem>();
         Connection connection = null;
@@ -66,7 +86,6 @@ public class DerbyDBModel implements IModel {
                         break;
                     default:
                         currency = Currency.USD;
-
                 }
                 //Build the List<CostItems>
                 costItems.add(new CostItem(id,date,category,description, sum,currency));
@@ -81,10 +100,15 @@ public class DerbyDBModel implements IModel {
                 throw new CostManagerException(e.getMessage());
             }
         }
-
         return costItems;
     }
 
+
+    /**
+     * In this function we call forName and creating our connectin.
+     * this function called once in our program.
+     * @throws CostManagerException
+     */
     public void createConnections() throws CostManagerException {
         try {
             Class.forName(driver);
@@ -95,6 +119,12 @@ public class DerbyDBModel implements IModel {
         }
     }
 
+
+    /**
+     * This function is used for us to push new costItems to our data base.
+     * @param item - all of the inputs we sent from the application when entering a new costItem are sent throug item.
+     * @throws CostManagerException
+     */
     @Override
     public void addCostItem(CostItem item) throws CostManagerException {
 
@@ -107,7 +137,7 @@ public class DerbyDBModel implements IModel {
             connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
             statement = connection.createStatement();
             state = connection.prepareStatement("insert into CostItem(date,category,description,summary,currency) values (?,?,?,?,?)");
-
+            
             state.setDate(1, item.getDate());
             state.setString(2, item.getCategories());
             state.setString(3, item.getDescription());
@@ -115,12 +145,16 @@ public class DerbyDBModel implements IModel {
             state.setString(5, item.getCurrency());
             state.execute();
 
-        killDB(connection,statement,rs);
+            killDB(connection,statement,rs);
         } catch (SQLException e) {
             throw new CostManagerException("problem with adding cost item ", e);
         }
     }
 
+    /**
+     * This function pritns all of the costItems that we have on our costItem table.
+     * @throws CostManagerException
+     */
     public void printCostItem() throws  CostManagerException {
         Connection connection = null;
         Statement statement = null;
@@ -138,19 +172,22 @@ public class DerbyDBModel implements IModel {
                 System.out.println("sum : " + rs.getDouble(5));
                 System.out.println("currency : " + rs.getString(6));
                 System.out.println('\n');
+                
                 killDB(connection,statement,rs);
-
-
             }
-
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             throw new CostManagerException("Could not print cost item", throwables);
         }
-
-
     }
 
+    /**
+     * This function refers to the get report button which gives us the data of costItems between two dates.
+     * @param start - the start date which we want to get costItems from
+     * @param end - the end date of the dates we want to get costItmes.
+     * @return - the return value is  a list of all the costItems who happend between the dates listed.
+     * @throws CostManagerException
+     */
     public List<CostItem> getReport(Date start, Date end) throws CostManagerException{
         List<CostItem> result = new ArrayList<CostItem>();
         Connection connection = null;
@@ -175,6 +212,14 @@ public class DerbyDBModel implements IModel {
         return result;
     }
 
+    /**
+     * the pieChart functions prints a dataset who contains all of the costItems between the dates we listed and those
+       costItems grouped by categories.
+     * @param start - the start date which we want to get costItems from
+     * @param end - the end date of the dates we want to get costItmes.
+     * @return - the return value is the chart which we created based on two dates.
+     * @throws CostManagerException
+     */
     public JFreeChart pieChart(Date start, Date end) throws CostManagerException{
         JFreeChart chart = null;
         Connection connection = null;
@@ -184,20 +229,14 @@ public class DerbyDBModel implements IModel {
             connection = DriverManager.getConnection(connectionString + "CostManagerDB;create=true");
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT category, SUM(summary) as total FROM CostItem WHERE date BETWEEN DATE ('" + start.toLocalDate() + "') AND DATE('" + end.toLocalDate() + "') group by category");
-//
             DefaultPieDataset dataset = new DefaultPieDataset();
             while (rs.next()) {
                 dataset.setValue(rs.getString("category"), Double.parseDouble(rs.getString("total")));
-
             }
             chart = ChartFactory.createPieChart("Category - amounts", dataset, true, true, false);
             int width = 560;
             int height = 370;
-
-//            IN CASE WE WILL WANT TO SAVE THE PIECHART AS FILE
-//            File pieChart = new File("Pie_Chart.jpeg");
-//            ChartUtilities.saveChartAsJPEG(pieChart, chart, width, height);
-
+            
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             throw new CostManagerException("Could not show piechart", throwables);
@@ -209,16 +248,19 @@ public class DerbyDBModel implements IModel {
                 throw new CostManagerException(throwables.getMessage());
             }
         }
-
         return chart;
     }
 
+    /**
+     * this function prints the pieChart dataset on the getReport page.
+     * @param result - holds all of the categories listed and their total amount in precentage.
+     * @throws CostManagerException
+     */
     public void printPiechart(ResultSet result) throws  CostManagerException{
 //        for(int i=0; i<result.size(); i++)
         while (true){
             try {
                 System.out.println("category: " + result.getString("category") + " total: " + result.getDouble("total"));
-
                 if (!result.next()) break;
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
@@ -226,9 +268,13 @@ public class DerbyDBModel implements IModel {
             }
         }
         System.out.println('\n');
-
     }
 
+    /**
+     * This function deletes costItem by id.
+     * @param id - uniqe id of costItem.
+     * @throws CostManagerException
+     */
     public void deleteCostItem(int id) throws CostManagerException {
         Connection connection = null;
         Statement statement = null;
@@ -248,6 +294,11 @@ public class DerbyDBModel implements IModel {
         }
     }
 
+    /**
+     * This function gets the name of the new category and pushes it to the categories table.
+     * @param category - a string holds the new category name.
+     * @throws CostManagerException
+     */
     public void addCategory(Category category) throws CostManagerException {
         Connection connection = null;
         Statement statement = null;
@@ -266,6 +317,11 @@ public class DerbyDBModel implements IModel {
         }
     }
 
+    /**
+     * This function gets all of the categories out of the categories table.
+     * @return - a list of all the categories exist on the table.
+     * @throws CostManagerException
+     */
     public List<Category> printCategories() throws  CostManagerException{
         List<Category> categories = new ArrayList<Category>();
         Connection connection = null;
@@ -292,26 +348,16 @@ public class DerbyDBModel implements IModel {
             }
             killDB(connection,statement,rs);
         }
-
         return categories;
     }
-    // Maybe throw it!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-    public void deleteCategory(String category) throws CostManagerException{
-        Connection connection = null;
-        Statement statement = null;
-        ResultSet rs = null;
-        String query = "";
-        try{
-            query = "delete from categories where name = "+ "'" + category + "'";
-            statement.execute(query);
-            System.out.println("Successfully deleted "+  category);
-        }
-        catch (SQLException e){
-            throw new CostManagerException("Problem deleting category", e);
-        }
-    }
 
-
+    /**
+     * This function kills the connection to the DB.
+     * @param connection
+     * @param statement
+     * @param rs
+     * @throws CostManagerException
+     */
     public void killDB(Connection connection, Statement statement, ResultSet rs) throws CostManagerException {
         if (statement != null) try {
             statement.close();
